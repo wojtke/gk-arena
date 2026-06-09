@@ -35,17 +35,28 @@
 .gc-tag.fam-packing { background: rgba(14,116,144,.14); color: #0e7490; }
 .gc-tag.fam-matchings { background: rgba(110,86,207,.12); color: var(--violet); }
 
-/* ---- 2-column game layout (left panel: settings + hints + explainers · right: board) ---- */
-.arena2 { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 18px; align-items: start; }
-/* The two slot wrappers are `display: contents`, so every card (settings + hints + explainers)
-   becomes a direct flex item of .panel and stacks with a uniform gap. (A sibling `.card + .card`
-   margin can't space the settings card from the first explainer card — they live in different
-   wrappers, so they're never DOM-adjacent siblings — hence the flex gap, neutralising that margin.) */
-.panel { min-width: 0; display: flex; flex-direction: column; gap: 16px; }
-.panel > #hub-settings, .panel > #hub-sidebar { display: contents; }
-.panel .card + .card { margin-top: 0; }
-.stage { min-width: 0; }
+/* ---- game layout: settings on the left; board + explainers stacked on the right ----
+   Grid areas place the three slots independently of DOM order, so the mobile (single-column) order
+   can differ from desktop: board first, then settings, then the explainers (maths) last. */
+.arena2 {
+  display: grid;
+  gap: 18px;
+  align-items: start;
+  grid-template-columns: 340px minmax(0, 1fr);
+  grid-template-areas:
+    "settings board"
+    "settings sidebar";
+}
+.arena2 > #hub-settings { grid-area: settings; min-width: 0; }
+.arena2 > #hub-board    { grid-area: board;    min-width: 0; }
+.arena2 > #hub-sidebar  { grid-area: sidebar;  min-width: 0; }
 
 @media (max-width: 900px) {
-  .arena2 { grid-template-columns: 1fr; }
+  .arena2 {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "board"
+      "settings"
+      "sidebar";
+  }
 }

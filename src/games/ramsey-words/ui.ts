@@ -265,7 +265,11 @@ function renderWord(): void {
   const wit = witnessTiles();
 
   if (s.word.length === 0) {
-    if (s.phase === 'point' && !over) word.appendChild(makeCaret(0));
+    if (s.phase === 'point' && !over) {
+      const c0 = makeCaret(0);
+      c0.classList.add('empty'); // wider, tile-tall click zone so the first gap is easy to see/hit
+      word.appendChild(c0);
+    }
     const hintSpan = document.createElement('span');
     hintSpan.className = 'empty-hint';
     hintSpan.textContent = s.phase === 'point'

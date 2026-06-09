@@ -11,7 +11,7 @@
 .game-vdw-online .line { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; }
 .game-vdw-online .empty-hint { color: var(--muted); font-size: .9rem; }
 
-.game-vdw-online .tile { position: relative; width: var(--vdw-tile); height: 56px; border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: #fff; border: 1px solid var(--line); box-shadow: 0 1px 2px rgba(0,0,0,.04); animation: vdwOnline_pop .18s ease-out; }
+.game-vdw-online .tile { position: relative; width: var(--vdw-tile); height: 56px; border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: #fff; border: 1px solid var(--line); box-shadow: 0 1px 2px rgba(0,0,0,.04); }
 .game-vdw-online .tile .chip { width: 24px; height: 24px; border-radius: 50%; background: var(--chip, #888); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
 .game-vdw-online .tile .idx { font-size: .72rem; font-weight: 700; color: var(--muted); }
 .game-vdw-online .tile.witness { border-color: var(--chip, var(--blue)); box-shadow: 0 0 0 2px var(--chip, var(--blue)); animation: vdwOnline_pulse 1s ease-in-out infinite; }
@@ -19,13 +19,17 @@
 @keyframes vdwOnline_pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes vdwOnline_pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
 
-/* insertion caret the pointer clicks (point phase) */
-.game-vdw-online .caret { width: 14px; align-self: stretch; display: grid; place-items: center; cursor: pointer; background: transparent; border: none; padding: 0; }
-.game-vdw-online .caret .bar { width: 3px; height: 70%; border-radius: 999px; background: transparent; transition: background .12s; }
-.game-vdw-online .caret:hover .bar { background: var(--blue); }
-.game-vdw-online .caret.sel .bar { background: var(--blue); box-shadow: 0 0 0 2px var(--blue-weak); }
+/* insertion caret the pointer clicks (point phase) — wide hit target, narrow centred bar */
+.game-vdw-online .caret { width: 24px; align-self: stretch; display: grid; place-items: center; cursor: pointer; background: transparent; border: none; padding: 0; }
+/* pickable carets are clearly visible by default */
+.game-vdw-online .caret .bar { width: 3px; height: 66%; border-radius: 999px; background: rgba(110,86,207,.55); transition: background .12s, box-shadow .12s; }
+.game-vdw-online .caret:hover .bar { background: var(--violet); box-shadow: 0 0 6px rgba(110,86,207,.55); }
+.game-vdw-online .caret.sel .bar { background: var(--violet); box-shadow: 0 0 0 2px rgba(110,86,207,.55); }
+/* non-pickable carets fade out, but a selected gap stays visible even when disabled */
 .game-vdw-online .caret.disabled { cursor: default; }
-.game-vdw-online .caret.disabled:hover .bar { background: transparent; }
+.game-vdw-online .caret.disabled .bar { background: transparent; }
+.game-vdw-online .caret.disabled:hover .bar { background: transparent; box-shadow: none; }
+.game-vdw-online .caret.disabled.sel .bar { background: var(--violet); box-shadow: 0 0 0 2px rgba(110,86,207,.55); }
 
 /* colour palette the painter clicks (paint phase) */
 .game-vdw-online .palette { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }

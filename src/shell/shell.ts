@@ -115,12 +115,10 @@ function renderGame(app: HTMLElement, mod: GameModule): void {
         </div>
       </div>
     </header>
-    <main class="arena2">
-      <aside class="panel game-${mod.id}" id="hub-panel">
-        <div id="hub-settings"></div>
-        <div id="hub-sidebar"></div>
-      </aside>
-      <section class="stage game-${mod.id}" id="hub-board"></section>
+    <main class="arena2 game-${mod.id}">
+      <div id="hub-settings"></div>
+      <section id="hub-board"></section>
+      <div id="hub-sidebar"></div>
     </main>
     <footer class="foot">
       <span>${mod.title} · ${mod.topic}</span>
@@ -133,8 +131,8 @@ function renderGame(app: HTMLElement, mod: GameModule): void {
 
   current = mod.mount({ settings, board, sidebar });
 
-  // Each left-panel card (Settings, How to play, maths, …) is collapsible via its <h2> header.
-  app.querySelectorAll<HTMLElement>('#hub-panel .card').forEach((cardEl) => {
+  // Each settings/explainer card (Settings, How to play, maths, …) is collapsible via its <h2> header.
+  app.querySelectorAll<HTMLElement>('#hub-settings .card, #hub-sidebar .card').forEach((cardEl) => {
     const h2 = cardEl.querySelector<HTMLElement>(':scope > h2');
     if (!h2) return;
     cardEl.classList.add('collapsible');

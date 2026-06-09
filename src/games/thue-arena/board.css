@@ -6,7 +6,7 @@
 .game-thue-arena .wordbox { position: relative; min-height: 72px; background: linear-gradient(180deg,#fbfcff,#f4f6fc); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; align-items: center; }
 .game-thue-arena .word { display: flex; flex-wrap: wrap; align-items: center; gap: 0; }
 .game-thue-arena .word.empty::before { content: "(empty word — Ann starts repetition-free)"; color: var(--muted); font-size: .86rem; }
-.game-thue-arena .tile { width: 36px; height: 42px; margin: 3px; border-radius: 9px; display: grid; place-items: center; font-weight: 800; font-size: 1.12rem; background: #fff; border: 1px solid var(--line); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.04); animation: thueArena_pop .18s ease-out; }
+.game-thue-arena .tile { width: 36px; height: 42px; margin: 3px; border-radius: 9px; display: grid; place-items: center; font-weight: 800; font-size: 1.12rem; background: #fff; border: 1px solid var(--line); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.04); }
 .game-thue-arena .tile.fresh { border-color: var(--violet); box-shadow: 0 0 0 2px rgba(110,86,207,.25); }
 .game-thue-arena .tile.win-a { background: var(--red-weak); border-color: var(--red); color: var(--red); animation: thueArena_pulse 1.0s ease-in-out infinite; }
 .game-thue-arena .tile.win-b { background: var(--blue-weak); border-color: var(--blue); color: var(--blue); animation: thueArena_pulse 1.0s ease-in-out infinite; }
@@ -14,12 +14,15 @@
 @keyframes thueArena_pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
 
 /* insertion carets (online mode) */
-.game-thue-arena .caret { width: 16px; height: 42px; margin: 3px 0; border: none; background: transparent; padding: 0; position: relative; cursor: pointer; }
-.game-thue-arena .caret::before { content: ""; position: absolute; left: 50%; top: 6px; bottom: 6px; width: 2px; transform: translateX(-50%); background: #d3d8e6; border-radius: 2px; transition: background .12s, width .12s; }
-.game-thue-arena .caret:hover:not(:disabled)::before { background: var(--blue); width: 3px; }
+.game-thue-arena .caret { width: 24px; height: 42px; margin: 3px 0; border: none; background: transparent; padding: 0; position: relative; cursor: pointer; }
+/* Pickable carets show a clearly visible bar by default (not only on hover). */
+.game-thue-arena .caret::before { content: ""; position: absolute; left: 50%; top: 7px; bottom: 7px; width: 3px; transform: translateX(-50%); background: rgba(110,86,207,.55); border-radius: 3px; transition: background .12s, width .12s, box-shadow .12s; }
+.game-thue-arena .caret:hover:not(:disabled)::before { background: var(--blue); width: 3px; box-shadow: 0 0 6px 1px rgba(110,86,207,.45); }
 .game-thue-arena .caret.active::before { background: var(--blue); width: 4px; box-shadow: 0 0 0 3px var(--blue-weak); }
 .game-thue-arena .caret.suggest::before { background: var(--violet); width: 4px; box-shadow: 0 0 0 3px rgba(110,86,207,.35); }
+/* Non-pickable carets stay transparent/faint. */
 .game-thue-arena .caret:disabled { cursor: default; }
+.game-thue-arena .caret:disabled:not(.active)::before, .game-thue-arena .caret.dim::before { background: transparent; box-shadow: none; }
 .game-thue-arena .caret.dim { opacity: .35; }
 
 /* palette ----------------------------------------------------------------- */

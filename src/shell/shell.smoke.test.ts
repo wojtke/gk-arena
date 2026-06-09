@@ -36,8 +36,8 @@ describe('shell (jsdom)', () => {
     // Explainers are shown by default (no toggle anymore).
     expect(document.body.classList.contains('explain-on')).toBe(true);
 
-    // Each left-panel card is collapsible via its header.
-    const collapsible = document.querySelector('#hub-panel .card.collapsible') as HTMLElement;
+    // Each settings/explainer card is collapsible via its header.
+    const collapsible = document.querySelector('#hub-settings .card.collapsible') as HTMLElement;
     expect(collapsible).toBeTruthy();
     const h2 = collapsible.querySelector('h2') as HTMLElement;
     fire(h2, 'click');

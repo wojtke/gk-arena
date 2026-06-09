@@ -11,8 +11,10 @@
 .game-different-blocks .wordbox { position: relative; min-height: 84px; background: linear-gradient(180deg,#fbfcff,#f4f6fc); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; align-items: center; }
 .game-different-blocks .word { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; }
 .game-different-blocks .empty-hint { color: var(--muted); font-size: .9rem; }
+/* empty start: no tiles to stretch against, so give the lone point-phase caret a tile-height bar */
+.game-different-blocks .word > .caret:first-child { min-height: 52px; }
 
-.game-different-blocks .tile { position: relative; width: 40px; height: 52px; border-radius: 9px; display: grid; place-items: center; font-weight: 800; font-size: 1.15rem; background: #fff; border: 1px solid var(--line); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.04); animation: differentBlocks_pop .18s ease-out; overflow: hidden; }
+.game-different-blocks .tile { position: relative; width: 40px; height: 52px; border-radius: 9px; display: grid; place-items: center; font-weight: 800; font-size: 1.15rem; background: #fff; border: 1px solid var(--line); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.04); overflow: hidden; }
 .game-different-blocks .tile .val { position: relative; z-index: 1; }
 /* the offending k-block run gets a boxed backdrop */
 .game-different-blocks .tile.inrun { background: var(--run-weak); border-color: var(--run); }
@@ -22,13 +24,19 @@
 @keyframes differentBlocks_pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes differentBlocks_pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
 
-/* insertion caret the constructor clicks (point phase) */
-.game-different-blocks .caret { width: 14px; align-self: stretch; display: grid; place-items: center; cursor: pointer; background: transparent; border: none; padding: 0; }
-.game-different-blocks .caret .bar { width: 3px; height: 70%; border-radius: 999px; background: transparent; transition: background .12s; }
-.game-different-blocks .caret:hover .bar { background: var(--blue); }
+/* insertion caret the constructor clicks (point phase). Wide button (big snap target),
+   narrow centred bar. Pickable carets show a faint bar by default so gaps are easy to spot. */
+.game-different-blocks .caret { width: 24px; align-self: stretch; display: grid; place-items: center; cursor: pointer; background: transparent; border: none; padding: 0; }
+.game-different-blocks .caret .bar { width: 3px; height: 66%; border-radius: 999px; background: rgba(110,86,207,.55); transition: background .12s, box-shadow .12s; }
+.game-different-blocks .caret:hover .bar { background: var(--violet); box-shadow: 0 0 6px rgba(110,86,207,.55); }
 .game-different-blocks .caret.sel .bar { background: var(--blue); box-shadow: 0 0 0 2px var(--blue-weak); }
+/* non-pickable carets (disabled, not selected) stay faint/transparent */
 .game-different-blocks .caret.disabled { cursor: default; }
-.game-different-blocks .caret.disabled:hover .bar { background: transparent; }
+.game-different-blocks .caret.disabled .bar { background: transparent; box-shadow: none; }
+.game-different-blocks .caret.disabled:hover .bar { background: transparent; box-shadow: none; }
+/* a selected gap stays clearly visible even when disabled (insert phase shows the chosen gap) */
+.game-different-blocks .caret.sel .bar,
+.game-different-blocks .caret.disabled.sel .bar { background: var(--blue); box-shadow: 0 0 0 2px var(--blue-weak); }
 
 .game-different-blocks .palette { display: flex; gap: 8px; flex-wrap: wrap; }
 .game-different-blocks .palette button { position: relative; width: 46px; height: 46px; border-radius: 11px; border: 1px solid var(--line); background: #fff; font: inherit; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: background .12s, transform .05s, border-color .12s; overflow: hidden; }

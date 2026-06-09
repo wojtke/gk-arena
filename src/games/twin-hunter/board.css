@@ -11,7 +11,7 @@
 .game-twin-hunter .word { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; }
 .game-twin-hunter .empty-hint { color: var(--muted); font-size: .9rem; }
 
-.game-twin-hunter .tile { position: relative; width: 40px; height: 52px; border-radius: 9px; display: grid; place-items: center; font-weight: 800; font-size: 1.15rem; background: #fff; border: 1px solid var(--line); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.04); animation: twinHunter_pop .18s ease-out; overflow: hidden; }
+.game-twin-hunter .tile { position: relative; width: 40px; height: 52px; border-radius: 9px; display: grid; place-items: center; font-weight: 800; font-size: 1.15rem; background: #fff; border: 1px solid var(--line); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.04); overflow: hidden; }
 .game-twin-hunter .tile.fresh { border-color: var(--violet); box-shadow: 0 0 0 2px rgba(110,86,207,.25); }
 /* faint vertical value bar (perm) showing order type */
 .game-twin-hunter .tile .valbar { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(110,86,207,.16); border-top: 1.5px solid rgba(110,86,207,.4); pointer-events: none; }
@@ -24,12 +24,14 @@
 @keyframes twinHunter_pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
 /* insertion caret the forcer clicks (point phase) */
-.game-twin-hunter .caret { width: 14px; align-self: stretch; display: grid; place-items: center; cursor: pointer; background: transparent; border: none; padding: 0; }
-.game-twin-hunter .caret .bar { width: 3px; height: 70%; border-radius: 999px; background: transparent; transition: background .12s; }
-.game-twin-hunter .caret:hover .bar { background: var(--blue); }
-.game-twin-hunter .caret.sel .bar { background: var(--blue); box-shadow: 0 0 0 2px var(--blue-weak); }
+.game-twin-hunter .caret { width: 24px; align-self: stretch; display: grid; place-items: center; cursor: pointer; background: transparent; border: none; padding: 0; }
+.game-twin-hunter .caret .bar { width: 3px; height: 66%; border-radius: 999px; background: rgba(110,86,207,.55); transition: background .12s, box-shadow .12s; }
+.game-twin-hunter .caret:hover .bar { background: var(--violet); box-shadow: 0 0 0 3px rgba(110,86,207,.22); }
+/* non-pickable carets stay faint, unless they are the selected gap */
 .game-twin-hunter .caret.disabled { cursor: default; }
-.game-twin-hunter .caret.disabled:hover .bar { background: transparent; }
+.game-twin-hunter .caret.disabled:not(.sel) .bar { background: transparent; box-shadow: none; }
+.game-twin-hunter .caret.disabled:hover .bar { background: transparent; box-shadow: none; }
+.game-twin-hunter .caret.sel .bar { background: var(--blue); box-shadow: 0 0 0 2px var(--blue-weak); }
 
 .game-twin-hunter .palette { display: flex; gap: 8px; flex-wrap: wrap; }
 .game-twin-hunter .palette button { position: relative; width: 46px; height: 46px; border-radius: 11px; border: 1px solid var(--line); background: #fff; font: inherit; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: background .12s, transform .05s, border-color .12s; overflow: hidden; }
