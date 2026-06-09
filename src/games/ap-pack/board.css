@@ -22,6 +22,8 @@
 .game-ap-pack .scell.preview-r { fill: var(--red); }
 .game-ap-pack .scell.preview-b { fill: var(--blue); }
 .game-ap-pack .scell.bad { fill: #9aa1b2; opacity: .7; }
+/* hint outline (class, not an inline attr — CSS stroke on .scell would override an attribute) */
+.game-ap-pack .scell.hint { stroke: var(--violet); stroke-width: 2.5; stroke-dasharray: 3 3; }
 .game-ap-pack .scell-label { fill: #9aa1b2; font-size: 9px; text-anchor: middle; pointer-events: none; font-variant-numeric: tabular-nums; }
 
 /* Comb tray */

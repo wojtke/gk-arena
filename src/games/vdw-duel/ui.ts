@@ -49,7 +49,6 @@ const SETTINGS_HTML = `
     <button id="undoBtn" class="btn">Undo</button>
     <button id="runBtn" class="btn" hidden>Run</button>
   </div>
-  <div id="hintText" class="hint-note">Click Hint to highlight a strong gap (Strong AI) — strong, not guaranteed safe.</div>
 </section>`;
 
 const BOARD_HTML = `
@@ -237,7 +236,7 @@ function renderLine(): void {
 function makeCaret(gap: number): HTMLElement {
   const el = document.createElement('button');
   const pickable = !isOver(state) && isHumanTurn();
-  el.className = 'caret' + (pickable ? '' : ' disabled') + (state.turn === BLUE ? ' blue' : '');
+  el.className = 'caret' + (pickable ? '' : ' disabled') + (state.turn === BLUE ? ' blue' : '') + (hint === gap ? ' hint' : '');
   el.dataset.gap = String(gap);
   const bar = document.createElement('span');
   bar.className = 'bar';
@@ -308,10 +307,6 @@ function render(): void {
     runBtn.hidden = true;
   }
 
-  // hint note text
-  if (hint !== null && isHumanTurn()) {
-    $('hintText').textContent = `Suggested move (Strong AI): gap ${hint} — a strong drop, not guaranteed safe.`;
-  }
 }
 
 // ---- controls ----

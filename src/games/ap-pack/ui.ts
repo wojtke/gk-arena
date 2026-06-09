@@ -370,10 +370,10 @@ function renderStrip(s: GameState): { viewBox: string; body: string } {
       if (prevOk) cls.push('preview', s.turn === BLUE ? 'preview-b' : 'preview-r');
       else cls.push('bad');
     }
-    const stroke = hintCells.has(i) && !isOver(s)
-      ? ' stroke="var(--violet)" stroke-width="2.5" stroke-dasharray="3 3"' : '';
+    // hint via a CSS class — an inline stroke="" attribute is overridden by the .scell CSS stroke
+    if (hintCells.has(i) && !isOver(s)) cls.push('hint');
     body.push(
-      `<rect x="${x(i).toFixed(1)}" y="${baseY}" width="${cellW.toFixed(1)}" height="${cellH.toFixed(1)}" rx="4" class="${cls.join(' ')}" data-cell="${i}"${stroke} />`,
+      `<rect x="${x(i).toFixed(1)}" y="${baseY}" width="${cellW.toFixed(1)}" height="${cellH.toFixed(1)}" rx="4" class="${cls.join(' ')}" data-cell="${i}" />`,
     );
     if (L <= 28) {
       body.push(

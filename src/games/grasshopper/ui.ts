@@ -62,7 +62,6 @@ const SETTINGS_HTML = `
     <button id="undoBtn" class="btn">Undo</button>
     <button id="runBtn" class="btn" hidden>Run</button>
   </div>
-  <div id="hintText" class="hint-note">Click Hint to highlight a strong move on the board.</div>
 </section>`;
 
 const BOARD_HTML = `
@@ -347,20 +346,6 @@ function renderInspected(): void {
   el.innerHTML = parts.join('');
 }
 
-function renderHint(): void {
-  const note = $('hintText');
-  if (hint && !isOver(state)) {
-    note.innerHTML = `<b>Hint:</b> ${hint.text}`;
-    return;
-  }
-  if (!isOver(state) && isAiTurn() && state.config.humanRole === 'none') {
-    const level = state.config.aiLevel[colorOf(currentPlayer(state))];
-    const e = explainMove(state, rng, level, committedAiMove());
-    if (e) { note.innerHTML = `<b>${currentPlayer(state) === BUILDER ? 'Builder' : 'Grasshopper'} (AI):</b> ${e.text}`; return; }
-  }
-  note.textContent = 'Click Hint to highlight a strong move on the board.';
-}
-
 function render(): void {
   const cfg = state.config;
   const over = isOver(state);
@@ -368,7 +353,6 @@ function render(): void {
   renderWord();
   renderPalette();
   renderInspected();
-  renderHint();
 
   // phase label
   const phaseEl = $('phaseLabel');
