@@ -10,6 +10,9 @@
 
 .game-arc-match .pt { fill: var(--dot-free); pointer-events: none; transition: r .12s ease, fill .12s ease; }
 .game-arc-match .pt.used { fill: var(--dot); }
+/* a picked dot takes the colour of the arc it belongs to (rule order beats .pt.used) */
+.game-arc-match .pt.r { fill: var(--red); }
+.game-arc-match .pt.b { fill: var(--blue); }
 /* Oversized transparent hit target: the clickable/hoverable area is the whole dot zone, not just
    the 7px dot, so clicks snap to the nearest dot. Hovering the zone highlights the dot. */
 .game-arc-match .pt-hit { fill: transparent; cursor: pointer; }
@@ -22,12 +25,16 @@
 .game-arc-match .pt-ring.r { stroke: var(--red); }
 .game-arc-match .pt-ring.b { stroke: var(--blue); }
 .game-arc-match .pt-ring.on { opacity: 1; }
+/* hover snap indicator: lighter, dashed ring on the column-snapped dot (rule order beats .on) */
+.game-arc-match .pt-ring.hover { opacity: 0.6; stroke-width: 2; stroke-dasharray: 3 3; }
 .game-arc-match .pt-label { fill: #9aa1b2; font-size: 11px; text-anchor: middle; pointer-events: none; font-variant-numeric: tabular-nums; }
 
 .game-arc-match .arc { fill: none; stroke-width: 4; stroke-linecap: round; opacity: 0.92; transition: opacity .15s ease; }
 .game-arc-match .arc-r { stroke: var(--red); }
 .game-arc-match .arc-b { stroke: var(--blue); }
 .game-arc-match .arc-ghost { opacity: 0.28; stroke-dasharray: 5 6; }
+/* live preview of the arc being drawn (selected dot → dot under cursor): dashed + low opacity */
+.game-arc-match .arc-preview { opacity: 0.42; stroke-dasharray: 4 7; }
 .game-arc-match .arc-hint { stroke: var(--violet); stroke-width: 4; stroke-dasharray: 3 7; opacity: 0.85; }
 .game-arc-match .arc-win { animation: arcMatch_pulse 1.1s ease-in-out infinite; filter: drop-shadow(0 2px 6px rgba(229,72,77,.35)); }
 .game-arc-match .arc-dim { opacity: 0.25; }

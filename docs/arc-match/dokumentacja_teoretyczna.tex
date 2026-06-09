@@ -46,9 +46,9 @@ skojarzeniem, pokolorowanym według tego, kto narysował dany łuk.
 Gracz \textbf{Maker} (czerwony) chce zbudować \emph{spośród własnych łuków} rodzinę $k$ łuków, które
 \textbf{parami się przecinają} (krzyżują). Gracz \textbf{Breaker} (niebieski) stara się mu w tym
 przeszkodzić. \textbf{Maker rozpoczyna grę.} Maker wygrywa w chwili, gdy jego czerwone łuki zawierają
-poszukiwany wzorzec rozmiaru $k$; Breaker wygrywa, gdy plansza się zapełni (lub żadne dokończenie wzorca
-przez Makera nie jest już możliwe), a wzorzec nie powstał. Remisy rozstrzygamy na korzyść Breakera ---
-zgodnie ze standardową konwencją gier Maker--Breaker.
+poszukiwany wzorzec rozmiaru $k$; jeśli plansza się zapełni (lub żadne dokończenie wzorca przez Makera
+nie jest już możliwe), a wzorzec nie powstał, wygrywa Breaker. W grach Maker--Breaker nie ma remisów
+--- zawsze wygrywa dokładnie jeden z graczy.
 
 W tej dokumentacji analizujemy wariant, w którym celem Makera jest \emph{krzyżowanie} --- ma ono
 prostą postać kanoniczną i czytelną interpretację geometryczną (łuki widocznie się przecinają).
@@ -157,7 +157,9 @@ Maker rozpoczyna i łącznie powstaje $n$ łuków, więc narysuje co najwyżej $
 k^*(n) \le \Big\lceil \tfrac{n}{2} \Big\rceil .
 \]
 To ograniczenie jest jednak słabe, a ogólne zachowanie $k^*(n)$ pozostaje \textbf{problemem otwartym}
-(krzywą $n^{1/3}$ z Twierdzenia~\ref{tw:es} traktujemy tylko jako odniesienie). Dla małych $n$ wartość
+(krzywą $n^{1/3}$ z Twierdzenia~\ref{tw:es} traktujemy tylko jako odniesienie).
+
+Dla małych $n$ wartość
 $k^*(n)$ wyznaczamy \emph{dokładnie} metodą minimax: stanem gry jest zbiór wolnych punktów oraz zbiory
 czerwonych i niebieskich łuków, a po każdym ruchu sprawdzamy, czy czerwone łuki zawierają
 $k$-krzyżowanie. Wcześniejsze rozpoznanie, że Maker nie ukończy już wzorca, jest tylko przyspieszeniem

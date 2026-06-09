@@ -134,7 +134,9 @@ const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getEleme
 let state!: GameState; // assigned in startNewGame(), called from mount()
 let history: GameState[] = [];
 let selected: number | null = null;
+let hovered: number | null = null; // dot under the cursor (column-snapped) — drives highlight + preview
 let hint: Move | null = null;
+let lastEdgeCount = 0; // so only a freshly-added arc animates in (no re-animation on re-render)
 let rng = makeRng(1);
 let seedCounter = 1;
 let aiTimer: number | undefined;
@@ -161,6 +163,23 @@ function geom(n: number) {
   const height = baselineY + LABEL_AREA;
   const x = (p: number) => MARGIN_X + (p - 1) * STEP;
   return { P, baselineY, width, height, x };
+}
+
+// Map a pointer event to the NEAREST dot index by x (column snapping) — so hovering/clicking anywhere
+// in a dot's column (including high above it in the arc area) snaps to that dot. Returns null when SVG
+// coordinate mapping is unavailable (e.g. jsdom in tests), so callers fall back to the data-p hit zone.
+function pointFromEvent(ev: MouseEvent): number | null {
+  try {
+    const svg = $('board') as unknown as SVGSVGElement;
+    if (typeof svg.getScreenCTM !== 'function') return null;
+    const ctm = svg.getScreenCTM();
+    if (!ctm) return null;
+    const loc = new DOMPoint(ev.clientX, ev.clientY).matrixTransform(ctm.inverse());
+    const P = state.config.n * 2;
+    return Math.max(1, Math.min(P, Math.round((loc.x - MARGIN_X) / STEP) + 1));
+  } catch {
+    return null;
+  }
 }
 
 // ---- config from controls ----
@@ -201,6 +220,7 @@ function startNewGame(): void {
   state = newGame(readConfig(seed));
   history = [];
   selected = null;
+  hovered = null;
   hint = null;
   running = state.config.humanRole === 'none' ? running : false;
   render();
@@ -214,6 +234,7 @@ function doMove(lo: number, hi: number): void {
   history.push(state);
   state = next;
   selected = null;
+  hovered = null;
   hint = null;
   render();
   scheduleAi();
@@ -254,6 +275,7 @@ function undo(): void {
     while (history.length && !humanControls(state.turn) && !isOver(state)) state = history.pop()!;
   }
   selected = null;
+  hovered = null;
   hint = null;
   running = false;
   render();
@@ -275,37 +297,51 @@ function render(): void {
 
   // --- board svg ---
   const body: string[] = [];
+  const selSide = state.turn === MAKER ? 'r' : 'b';
+
+  // each used dot is coloured by the arc it belongs to
+  const ptColor = new Map<number, Color>();
+  for (const e of state.edges) { ptColor.set(e.lo, e.color); ptColor.set(e.hi, e.color); }
 
   // hint arc (under everything)
   if (hint && !over) {
     body.push(`<path d="${arcPath(g.x(hint[0]), g.x(hint[1]), g.baselineY)}" class="arc arc-hint" />`);
   }
 
-  // arcs
-  for (const e of state.edges) {
-    const cls = ['arc', e.color === MAKER ? 'arc-r' : 'arc-b', 'arc-new'];
+  // committed arcs. Only a just-added arc animates in (when the edge count grew this render), so
+  // re-renders for hover / undo / AI don't replay the draw on existing arcs (the "twitch").
+  const animateNewest = state.edges.length > lastEdgeCount;
+  state.edges.forEach((e, i) => {
+    const cls = ['arc', e.color === MAKER ? 'arc-r' : 'arc-b'];
+    if (animateNewest && i === state.edges.length - 1) cls.push('arc-new');
     const key = `${e.lo}-${e.hi}`;
-    if (over && witnessKeys.size) {
-      if (witnessKeys.has(key)) cls.push('arc-win');
-      else cls.push('arc-dim');
-    }
+    if (over && witnessKeys.size) cls.push(witnessKeys.has(key) ? 'arc-win' : 'arc-dim');
     body.push(`<path d="${arcPath(g.x(e.lo), g.x(e.hi), g.baselineY)}" class="${cls.join(' ')}" />`);
+  });
+
+  // live preview: a dashed, low-opacity arc from the selected dot to the dot under the cursor
+  if (!over && selected !== null && hovered !== null && hovered !== selected && !state.used[hovered]) {
+    body.push(`<path d="${arcPath(g.x(selected), g.x(hovered), g.baselineY)}" class="arc arc-preview arc-${selSide}" />`);
   }
 
-  // points + labels + selection ring. Each point is wrapped in a <g> carrying an oversized,
-  // transparent hit circle on top — so a click anywhere in the dot's zone snaps to that dot, and
-  // hovering the whole zone highlights it. The selection ring/dot take the colour of the side to
-  // move (red Maker / blue Breaker) rather than a neutral violet.
-  const selSide = state.turn === MAKER ? 'r' : 'b';
+  // points + labels + selection/hover rings. Each point carries an oversized transparent hit circle
+  // (a fallback when SVG-coordinate snapping is unavailable). The selection/hover rings and the dot
+  // take the side-to-move's colour (red Maker / blue Breaker).
   for (let p = 1; p <= g.P; p++) {
     const x = g.x(p);
     const used = state.used[p];
     const ptCls = ['pt'];
-    if (used) ptCls.push('used');
+    if (used) {
+      ptCls.push('used');
+      const c = ptColor.get(p);
+      if (c) ptCls.push(c === MAKER ? 'r' : 'b');
+    }
     if (selected === p) ptCls.push('sel', `sel-${selSide}`);
     const inner: string[] = [];
     if (selected === p) {
       inner.push(`<circle cx="${x}" cy="${g.baselineY}" r="${PT_R + 4}" class="pt-ring on ${selSide}" />`);
+    } else if (!over && hovered === p && !used) {
+      inner.push(`<circle cx="${x}" cy="${g.baselineY}" r="${PT_R + 3}" class="pt-ring on hover ${selSide}" />`);
     }
     inner.push(`<circle cx="${x}" cy="${g.baselineY}" r="${PT_R}" class="${ptCls.join(' ')}" />`);
     inner.push(`<text x="${x}" y="${g.baselineY + 18}" class="pt-label">${p}</text>`);
@@ -315,6 +351,7 @@ function render(): void {
 
   $('board').setAttribute('viewBox', `0 0 ${g.width} ${g.height}`);
   $('board').innerHTML = body.join('');
+  lastEdgeCount = state.edges.length;
 
   // --- status ---
   const turnPill = $('turnPill');
@@ -399,10 +436,24 @@ export function mount(slots: GameSlots): GameInstance {
   slots.board.innerHTML = BOARD_HTML;
   slots.sidebar.innerHTML = SIDEBAR_HTML;
 
-  // board interaction (delegated; survives innerHTML rebuilds)
+  // board interaction (delegated; survives innerHTML rebuilds). Clicks snap to the nearest dot by
+  // column; if SVG-coordinate mapping is unavailable (jsdom) fall back to the data-p hit zone.
   $('board').addEventListener('click', (ev) => {
-    const t = (ev.target as Element).closest('[data-p]');
-    if (t) onPoint(+(t.getAttribute('data-p') as string));
+    let p = pointFromEvent(ev);
+    if (p === null) {
+      const t = (ev.target as Element).closest('[data-p]');
+      p = t ? +(t.getAttribute('data-p') as string) : null;
+    }
+    if (p !== null) onPoint(p);
+  });
+  $('board').addEventListener('mousemove', (ev) => {
+    if (!isHumanTurn()) { if (hovered !== null) { hovered = null; render(); } return; }
+    const p = pointFromEvent(ev);
+    const h = p !== null && !state.used[p] ? p : null;
+    if (h !== hovered) { hovered = h; render(); } // re-render only when the snapped dot changes
+  });
+  $('board').addEventListener('mouseleave', () => {
+    if (hovered !== null) { hovered = null; render(); }
   });
 
   // settings → live labels + new game
