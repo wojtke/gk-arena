@@ -93,7 +93,8 @@ const SIDEBAR_HTML = `
         <b id="howtoK">3</b> red arcs that <b id="howtoType">all cross each other</b>.</li>
       <li><b class="blue-text">Breaker (blue)</b> draws arcs too, using up dots so you can't.</li>
       <li>Each dot is used once. Maker always moves first.</li>
-      <li>Maker wins the instant the target is reached; otherwise Breaker wins when the board fills.</li>
+      <li><b>Maker–Breaker</b> (default): a race — Maker wins the instant the target is reached, otherwise Breaker wins when the board fills.</li>
+      <li><b>Scoring duel</b>: no early win — the board is <i>always</i> played to the end. Maker maximises, Breaker minimises the largest red set; the final size is the score (compared to par <b>k</b>).</li>
     </ol>
   </section>
 
@@ -383,15 +384,26 @@ function render(): void {
     turnPill.textContent = `${win} wins`;
     turnPill.className = 'turn-pill done';
   } else {
-    turnPill.textContent = state.turn === MAKER ? 'Red to move' : 'Blue to move';
+    const base = state.turn === MAKER ? 'Red to move' : 'Blue to move';
+    // scoring never ends early — cue that the board is always played out in full
+    turnPill.textContent = cfg.mode === 'scoring' ? `${base} · play to fill the board` : base;
     turnPill.className = `turn-pill ${state.turn === MAKER ? '' : 'blue'}`.trim();
   }
   $('goalText').textContent = goalText(cfg);
 
   // --- meter ---
-  $('meterFill').style.width = `${Math.min(prog.size / cfg.k, 1) * 100}%`;
-  $('meterValue').textContent = `${prog.size} / ${cfg.k}`;
-  ($('meter').querySelector('.meter-label') as HTMLElement).textContent = `Largest red ${cfg.type}`;
+  const label = $('meter').querySelector('.meter-label') as HTMLElement;
+  if (cfg.mode === 'scoring') {
+    // a live SCORE (largest red set so far), not a race to k: k is only the par bar, and Maker can
+    // finish above it. Fill tracks progress toward par but the value shows the actual score.
+    $('meterFill').style.width = `${Math.min(prog.size / cfg.k, 1) * 100}%`;
+    $('meterValue').textContent = `${prog.size}  ·  par ${cfg.k}`;
+    label.textContent = `Red score — largest ${cfg.type}`;
+  } else {
+    $('meterFill').style.width = `${Math.min(prog.size / cfg.k, 1) * 100}%`;
+    $('meterValue').textContent = `${prog.size} / ${cfg.k}`;
+    label.textContent = `Largest red ${cfg.type}`;
+  }
 
   // --- banner ---
   const banner = $('banner');
