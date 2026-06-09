@@ -72,7 +72,7 @@ select:focus-visible, .btn:focus-visible, button:focus-visible { outline: 2px so
 .explainer { display: none; }
 body.explain-on .explainer { display: block; }
 .howto-list { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 7px; font-size: .88rem; line-height: 1.45; }
-.hint-note { font-size: .84rem; line-height: 1.45; padding: 10px 12px; border-radius: 10px; background: rgba(110,86,207,.08); border: 1px solid rgba(110,86,207,.25); color: var(--ink); }
+.hint-note { margin-top: 12px; font-size: .84rem; line-height: 1.45; padding: 10px 12px; border-radius: 10px; background: rgba(110,86,207,.08); border: 1px solid rgba(110,86,207,.25); color: var(--ink); }
 .hint-note b { color: var(--violet); }
 .hint-note.hidden { display: none; }
 .red-text { color: var(--red); } .blue-text { color: var(--blue); } .muted { color: var(--muted); } .small { font-size: .8rem; }
