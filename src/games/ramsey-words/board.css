@@ -22,17 +22,17 @@
 
 /* insertion caret the constructor clicks (point phase) */
 .game-ramsey-words .caret { width: 24px; align-self: stretch; display: grid; place-items: center; cursor: pointer; background: transparent; border: none; padding: 0; }
-/* pickable carets are clearly visible by default (not just on hover) */
-.game-ramsey-words .caret .bar { width: 3px; height: 66%; border-radius: 999px; background: rgba(110,86,207,.55); transition: background .12s, box-shadow .12s; }
-.game-ramsey-words .caret:hover .bar { background: var(--violet); box-shadow: 0 0 6px color-mix(in srgb, var(--violet) 60%, transparent); }
+.game-ramsey-words .caret .bar { width: 3px; height: 66%; border-radius: 999px; background: rgba(120,128,145,.5); transition: background .12s, box-shadow .12s; } /* grey by default */
+.game-ramsey-words .caret:hover .bar { background: var(--violet); box-shadow: 0 0 0 3px rgba(110,86,207,.22); }
 .game-ramsey-words .caret.sel .bar { background: var(--blue); box-shadow: 0 0 0 2px var(--blue-weak); }
-/* non-pickable (point phase over / insert phase) carets fade out — unless they're the selected gap */
+/* non-pickable carets stay faint, unless they are the selected gap */
 .game-ramsey-words .caret.disabled { cursor: default; }
-.game-ramsey-words .caret.disabled:not(.sel) .bar { background: transparent; }
+.game-ramsey-words .caret.disabled:not(.sel) .bar { background: transparent; box-shadow: none; }
 .game-ramsey-words .caret.disabled:not(.sel):hover .bar { background: transparent; box-shadow: none; }
-.game-ramsey-words .caret.disabled.sel .bar { background: var(--blue); box-shadow: 0 0 0 2px var(--blue-weak); }
-/* empty start: no tiles to stretch against — give the lone caret a tile-tall click zone + visible bar */
-.game-ramsey-words .caret.empty { width: 30px; min-height: 52px; }
+/* empty start: full-width, centred, click-anywhere prompt */
+.game-ramsey-words .caret.empty { width: 100%; flex: 1 1 100%; min-height: 56px; }
+.game-ramsey-words .caret.empty .bar { display: none; }
+.game-ramsey-words .caret.empty .empty-hint { color: var(--muted); font-size: .9rem; }
 
 .game-ramsey-words .palette { display: flex; gap: 8px; flex-wrap: wrap; }
 .game-ramsey-words .palette button { position: relative; width: 46px; height: 46px; border-radius: 11px; border: 1px solid var(--line); background: #fff; font: inherit; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: background .12s, transform .05s, border-color .12s; overflow: hidden; }

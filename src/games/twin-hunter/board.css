@@ -25,13 +25,17 @@
 
 /* insertion caret the forcer clicks (point phase) */
 .game-twin-hunter .caret { width: 24px; align-self: stretch; display: grid; place-items: center; cursor: pointer; background: transparent; border: none; padding: 0; }
-.game-twin-hunter .caret .bar { width: 3px; height: 66%; border-radius: 999px; background: rgba(110,86,207,.55); transition: background .12s, box-shadow .12s; }
+.game-twin-hunter .caret .bar { width: 3px; height: 66%; border-radius: 999px; background: rgba(120,128,145,.5); transition: background .12s, box-shadow .12s; } /* grey by default */
 .game-twin-hunter .caret:hover .bar { background: var(--violet); box-shadow: 0 0 0 3px rgba(110,86,207,.22); }
+.game-twin-hunter .caret.sel .bar { background: var(--blue); box-shadow: 0 0 0 2px var(--blue-weak); }
 /* non-pickable carets stay faint, unless they are the selected gap */
 .game-twin-hunter .caret.disabled { cursor: default; }
 .game-twin-hunter .caret.disabled:not(.sel) .bar { background: transparent; box-shadow: none; }
-.game-twin-hunter .caret.disabled:hover .bar { background: transparent; box-shadow: none; }
-.game-twin-hunter .caret.sel .bar { background: var(--blue); box-shadow: 0 0 0 2px var(--blue-weak); }
+.game-twin-hunter .caret.disabled:not(.sel):hover .bar { background: transparent; box-shadow: none; }
+/* empty start: full-width, centred, click-anywhere prompt */
+.game-twin-hunter .caret.empty { width: 100%; flex: 1 1 100%; min-height: 56px; }
+.game-twin-hunter .caret.empty .bar { display: none; }
+.game-twin-hunter .caret.empty .empty-hint { color: var(--muted); font-size: .9rem; }
 
 .game-twin-hunter .palette { display: flex; gap: 8px; flex-wrap: wrap; }
 .game-twin-hunter .palette button { position: relative; width: 46px; height: 46px; border-radius: 11px; border: 1px solid var(--line); background: #fff; font: inherit; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: background .12s, transform .05s, border-color .12s; overflow: hidden; }

@@ -15,15 +15,21 @@
 
 /* insertion carets (online mode) */
 .game-thue-arena .caret { width: 24px; height: 42px; margin: 3px 0; border: none; background: transparent; padding: 0; position: relative; cursor: pointer; }
-/* Pickable carets show a clearly visible bar by default (not only on hover). */
-.game-thue-arena .caret::before { content: ""; position: absolute; left: 50%; top: 7px; bottom: 7px; width: 3px; transform: translateX(-50%); background: rgba(110,86,207,.55); border-radius: 3px; transition: background .12s, width .12s, box-shadow .12s; }
+/* Default bar is grey (visible, but clearly a neutral target, not a chosen/hinted gap). */
+.game-thue-arena .caret::before { content: ""; position: absolute; left: 50%; top: 7px; bottom: 7px; width: 3px; transform: translateX(-50%); background: rgba(120,128,145,.5); border-radius: 3px; transition: background .12s, width .12s, box-shadow .12s; }
+/* Pickable caret on hover: solid blue with a violet glow. */
 .game-thue-arena .caret:hover:not(:disabled)::before { background: var(--blue); width: 3px; box-shadow: 0 0 6px 1px rgba(110,86,207,.45); }
+/* Chosen gap (insert phase): strong solid-blue highlight + ring. */
 .game-thue-arena .caret.active::before { background: var(--blue); width: 4px; box-shadow: 0 0 0 3px var(--blue-weak); }
+/* Hinted gap: strong violet highlight + ring. */
 .game-thue-arena .caret.suggest::before { background: var(--violet); width: 4px; box-shadow: 0 0 0 3px rgba(110,86,207,.35); }
-/* Non-pickable carets stay transparent/faint. */
+/* Non-pickable carets: no cursor; transparent bar unless they are the chosen (active) gap. */
 .game-thue-arena .caret:disabled { cursor: default; }
-.game-thue-arena .caret:disabled:not(.active)::before, .game-thue-arena .caret.dim::before { background: transparent; box-shadow: none; }
-.game-thue-arena .caret.dim { opacity: .35; }
+.game-thue-arena .caret:disabled:not(.active)::before { background: transparent; box-shadow: none; }
+/* Empty start (online): one full-width, centred, click-anywhere caret carrying the prompt. */
+.game-thue-arena .caret.empty { width: 100%; min-height: 48px; height: auto; display: flex; align-items: center; justify-content: center; }
+.game-thue-arena .caret.empty::before { display: none; }
+.game-thue-arena .caret.empty .empty-hint { color: var(--muted); font-size: .9rem; }
 
 /* palette ----------------------------------------------------------------- */
 .game-thue-arena .palette { display: flex; gap: 8px; flex-wrap: wrap; }

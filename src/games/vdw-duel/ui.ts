@@ -208,41 +208,41 @@ function ownerLabel(o: Owner): string {
   return o === RED ? 'Red' : 'Blue';
 }
 
-/** Build the token + caret row. Carets are clickable while it is a human turn and the game is live. */
+/** Build the token + caret row. A caret is rendered in every gap on every render so the line never
+ *  collapses (e.g. during the AI's turn); makeCaret marks non-pickable carets `disabled`. */
 function renderLine(): void {
   const line = $('line');
   line.innerHTML = '';
   const s = state;
-  const over = isOver(s);
-  const showCarets = !over && isHumanTurn();
 
   const witness = new Set(s.witness ?? []);
 
   if (s.line.length === 0) {
-    if (showCarets) line.appendChild(makeCaret(0));
+    const c = makeCaret(0);
+    c.classList.add('empty');
     const hintSpan = document.createElement('span');
     hintSpan.className = 'empty-hint';
-    hintSpan.textContent = `${ownerLabel(s.turn)} to place — click a caret to drop your colour.`;
-    line.appendChild(hintSpan);
+    hintSpan.textContent = `${ownerLabel(s.turn)} to place — click anywhere here to drop your colour.`;
+    c.appendChild(hintSpan);
+    line.appendChild(c);
     return;
   }
 
   for (let i = 0; i <= s.line.length; i++) {
-    if (showCarets) line.appendChild(makeCaret(i));
+    line.appendChild(makeCaret(i));
     if (i < s.line.length) line.appendChild(makeTile(s.line[i], i, witness.has(i)));
   }
 }
 
 function makeCaret(gap: number): HTMLElement {
   const el = document.createElement('button');
-  const live = !isOver(state) && isHumanTurn();
-  el.className = 'caret' + (live ? '' : ' disabled') + (state.turn === BLUE ? ' blue' : '');
+  const pickable = !isOver(state) && isHumanTurn();
+  el.className = 'caret' + (pickable ? '' : ' disabled') + (state.turn === BLUE ? ' blue' : '');
   el.dataset.gap = String(gap);
-  if (hint !== null && hint === gap) el.classList.add('sel');
   const bar = document.createElement('span');
   bar.className = 'bar';
   el.appendChild(bar);
-  if (!live) el.tabIndex = -1;
+  if (!pickable) el.tabIndex = -1;
   return el;
 }
 

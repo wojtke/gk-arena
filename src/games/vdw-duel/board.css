@@ -18,16 +18,20 @@
 @keyframes vdwDuel_pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes vdwDuel_pulse { 0%,100% { box-shadow: 0 0 0 2px currentColor; } 50% { box-shadow: 0 0 0 5px currentColor; } }
 
-/* insertion caret — coloured by whose turn it is (you always drop your own colour).
-   Pickable carets show a faint violet bar by default so gaps are visible without hovering;
-   the wide (24px) button is an easy, snappy click target while the bar stays narrow/centred. */
+/* insertion caret — the wide (24px) button is an easy, snappy click target while the bar stays
+   narrow/centred. The bar is grey by default; hovering a pickable caret previews the SIDE colour
+   (red on Red's turn, blue on Blue's turn) since you always drop your own colour. */
 .game-vdw-duel .caret { width: 24px; align-self: stretch; display: grid; place-items: center; cursor: pointer; background: transparent; border: none; padding: 0; }
-.game-vdw-duel .caret .bar { width: 3px; height: 66%; border-radius: 999px; background: rgba(110,86,207,.55); transition: background .12s, box-shadow .12s; }
-.game-vdw-duel .caret:hover .bar { background: var(--violet); box-shadow: 0 0 0 3px rgba(110,86,207,.22); }
-.game-vdw-duel .caret.sel .bar { background: var(--violet); box-shadow: 0 0 0 3px rgba(110,86,207,.28); }
+.game-vdw-duel .caret .bar { width: 3px; height: 66%; border-radius: 999px; background: rgba(120,128,145,.5); transition: background .12s, box-shadow .12s; } /* grey by default */
+.game-vdw-duel .caret:not(.disabled):hover .bar { background: var(--red); box-shadow: 0 0 0 3px rgba(229,72,77,.18); }
+.game-vdw-duel .caret.blue:not(.disabled):hover .bar { background: var(--blue); box-shadow: 0 0 0 3px var(--blue-weak); }
 .game-vdw-duel .caret.disabled { cursor: default; }
-.game-vdw-duel .caret.disabled .bar { background: transparent; }
+.game-vdw-duel .caret.disabled .bar { background: transparent; box-shadow: none; }
 .game-vdw-duel .caret.disabled:hover .bar { background: transparent; box-shadow: none; }
+/* empty start: full-width, centred, click-anywhere prompt */
+.game-vdw-duel .caret.empty { width: 100%; flex: 1 1 100%; min-height: 56px; }
+.game-vdw-duel .caret.empty .bar { display: none; }
+.game-vdw-duel .caret.empty .empty-hint { color: var(--muted); font-size: .9rem; }
 
 /* blue meter variants */
 .game-vdw-duel .meter-fill.blue { background: linear-gradient(90deg,#9db1f0,var(--blue)); }

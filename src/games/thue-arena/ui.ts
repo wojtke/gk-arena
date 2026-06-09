@@ -277,29 +277,47 @@ function renderWord(): void {
   const wordEl = $('word');
   const over = isOver(state);
   const online = state.config.game === 'online';
-  const showCarets = online && !over && state.phase === 'point' && isHumanTurn();
+  // A gap is "pickable" only on a human forcer's point-phase turn; carets are still rendered at every
+  // gap in online mode so the row never re-flows when the phase changes or it is the AI's turn.
+  const pickable = online && !over && state.phase === 'point' && isHumanTurn();
   const chosenGap = online && state.phase === 'insert' ? state.gap : null;
 
-  wordEl.classList.toggle('empty', state.word.length === 0 && !showCarets);
+  // In append mode the empty word shows the shared "(empty word …)" ::before via the .empty class.
+  // In online mode we render a single full-width click-anywhere caret instead (handled below).
+  wordEl.classList.toggle('empty', state.word.length === 0 && !online);
   const parts: string[] = [];
   // In the point phase a Hint names the recommended GAP (hint.move); cue it on the board.
-  const suggestGap = showCarets && hint ? hint.move : -1;
+  const suggestGap = pickable && hint ? hint.move : -1;
 
   const caret = (gap: number): string => {
-    // Point phase (human forcer): show a clickable caret at every gap.
-    // Insert phase: show only the already-chosen gap, highlighted and disabled.
-    if (showCarets) {
+    // Pickable gap (human forcer, point phase): a plain clickable caret, with `suggest` on the hint.
+    if (pickable) {
       const cls = gap === suggestGap ? 'caret suggest' : 'caret';
-      return `<button class="${cls}" data-gap="${gap}" aria-label="insert at gap ${gap}"></button>`;
+      return `<button class="${cls}" data-gap="${gap}" aria-label="point at gap ${gap}"></button>`;
     }
+    // The already-chosen gap (insert phase): highlighted and not clickable.
     if (chosenGap === gap) {
       return `<button class="caret active" data-gap="${gap}" disabled aria-label="chosen gap ${gap}"></button>`;
     }
-    return '';
+    // Every other gap in online mode stays in the DOM but disabled (so the row keeps its shape).
+    return `<button class="caret disabled" data-gap="${gap}" disabled tabindex="-1" aria-label="gap ${gap}"></button>`;
   };
 
+  // Empty word in online mode: one full-width, centred, click-anywhere caret carrying the prompt.
+  if (online && state.word.length === 0) {
+    const cls = pickable ? 'caret empty' : 'caret empty disabled';
+    const dis = pickable ? '' : ' disabled tabindex="-1"';
+    const hintText = pickable
+      ? 'Ben: click anywhere here to point at the first gap.'
+      : '(empty word — Ann starts repetition-free)';
+    wordEl.innerHTML =
+      `<button class="${cls}" data-gap="0"${dis} aria-label="point at the first gap">` +
+      `<span class="empty-hint">${hintText}</span></button>`;
+    return;
+  }
+
   for (let i = 0; i <= state.word.length; i++) {
-    parts.push(caret(i));
+    if (online) parts.push(caret(i));
     if (i < state.word.length) {
       const cls = ['tile'];
       const wc = tileWinClass(i);

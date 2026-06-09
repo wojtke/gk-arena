@@ -252,37 +252,39 @@ function renderWord(): void {
   const maxVal = Math.max(1, s.config.n);
 
   if (s.seq.length === 0) {
-    if (s.phase === 'point' && !over) {
-      // single caret at gap 0
-      word.appendChild(makeCaret(0));
-    }
+    // empty start: one full-width, centred, click-anywhere caret carrying the prompt
+    const c = makeCaret(0);
+    c.classList.add('empty');
     const hintSpan = document.createElement('span');
     hintSpan.className = 'empty-hint';
     hintSpan.textContent = s.phase === 'point'
-      ? 'Forcer: click the caret to point at the first gap.'
+      ? 'Forcer: click anywhere here to point at the first gap.'
       : 'Avoider: pick a symbol to insert.';
-    word.appendChild(hintSpan);
+    c.appendChild(hintSpan);
+    word.appendChild(c);
     return;
   }
 
-  const showCarets = s.phase === 'point' && !over;
+  // Always render a caret in every gap so the row never reflows ("crams") when the phase changes or
+  // it's the AI's turn; makeCaret marks each pickable / chosen / disabled.
   for (let i = 0; i <= s.seq.length; i++) {
-    if (showCarets) word.appendChild(makeCaret(i));
-    else if (s.phase === 'insert' && s.gap === i) word.appendChild(makeCaret(i, true)); // selected gap
+    word.appendChild(makeCaret(i));
     if (i < s.seq.length) word.appendChild(makeTile(s.seq[i], i, variant, maxVal, colorOf.get(i)));
   }
 }
 
-function makeCaret(gap: number, selected = false): HTMLElement {
-  const showCarets = state.phase === 'point' && !isOver(state);
+function makeCaret(gap: number): HTMLElement {
+  const pickable = state.phase === 'point' && !isOver(state) && isHumanTurn();
+  const chosen = state.phase === 'insert'
+    ? state.gap === gap
+    : (state.phase === 'point' && hint === gap);
   const el = document.createElement('button');
-  el.className = 'caret' + (selected ? ' sel' : '') + (showCarets ? '' : ' disabled');
+  el.className = 'caret' + (pickable ? '' : ' disabled') + (chosen ? ' sel' : '');
   el.dataset.gap = String(gap);
-  if (hint !== null && state.phase === 'point' && hint === gap) el.classList.add('sel');
   const bar = document.createElement('span');
   bar.className = 'bar';
   el.appendChild(bar);
-  if (!showCarets) el.tabIndex = -1;
+  if (!pickable) el.tabIndex = -1;
   return el;
 }
 

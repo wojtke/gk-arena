@@ -19,17 +19,19 @@
 @keyframes vdwOnline_pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes vdwOnline_pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
 
-/* insertion caret the pointer clicks (point phase) — wide hit target, narrow centred bar */
+/* insertion caret the pointer clicks (point phase) */
 .game-vdw-online .caret { width: 24px; align-self: stretch; display: grid; place-items: center; cursor: pointer; background: transparent; border: none; padding: 0; }
-/* pickable carets are clearly visible by default */
-.game-vdw-online .caret .bar { width: 3px; height: 66%; border-radius: 999px; background: rgba(110,86,207,.55); transition: background .12s, box-shadow .12s; }
-.game-vdw-online .caret:hover .bar { background: var(--violet); box-shadow: 0 0 6px rgba(110,86,207,.55); }
-.game-vdw-online .caret.sel .bar { background: var(--violet); box-shadow: 0 0 0 2px rgba(110,86,207,.55); }
-/* non-pickable carets fade out, but a selected gap stays visible even when disabled */
+.game-vdw-online .caret .bar { width: 3px; height: 66%; border-radius: 999px; background: rgba(120,128,145,.5); transition: background .12s, box-shadow .12s; } /* grey by default */
+.game-vdw-online .caret:hover .bar { background: var(--violet); box-shadow: 0 0 0 3px rgba(110,86,207,.22); }
+.game-vdw-online .caret.sel .bar { background: var(--blue); box-shadow: 0 0 0 2px var(--blue-weak); }
+/* non-pickable carets stay faint, unless they are the selected gap */
 .game-vdw-online .caret.disabled { cursor: default; }
-.game-vdw-online .caret.disabled .bar { background: transparent; }
-.game-vdw-online .caret.disabled:hover .bar { background: transparent; box-shadow: none; }
-.game-vdw-online .caret.disabled.sel .bar { background: var(--violet); box-shadow: 0 0 0 2px rgba(110,86,207,.55); }
+.game-vdw-online .caret.disabled:not(.sel) .bar { background: transparent; box-shadow: none; }
+.game-vdw-online .caret.disabled:not(.sel):hover .bar { background: transparent; box-shadow: none; }
+/* empty start: full-width, centred, click-anywhere prompt */
+.game-vdw-online .caret.empty { width: 100%; flex: 1 1 100%; min-height: 56px; }
+.game-vdw-online .caret.empty .bar { display: none; }
+.game-vdw-online .caret.empty .empty-hint { color: var(--muted); font-size: .9rem; }
 
 /* colour palette the painter clicks (paint phase) */
 .game-vdw-online .palette { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }

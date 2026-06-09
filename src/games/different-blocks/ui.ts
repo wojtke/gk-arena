@@ -235,24 +235,26 @@ function renderWord(): void {
   const word = $('word');
   word.innerHTML = '';
   const s = state;
-  const over = isOver(s);
   const { color, runStart, runEnd } = buildColorMap(s);
 
   if (s.word.length === 0) {
-    if (s.phase === 'point' && !over) word.appendChild(makeCaret(0));
+    // empty start: one full-width, centred, click-anywhere caret carrying the prompt
+    const c = makeCaret(0);
+    c.classList.add('empty');
     const hintSpan = document.createElement('span');
     hintSpan.className = 'empty-hint';
     hintSpan.textContent = s.phase === 'point'
-      ? 'Constructor: click the caret to point at the first gap.'
+      ? 'Constructor: click anywhere here to point at the first gap.'
       : 'Avoider: pick a letter to insert.';
-    word.appendChild(hintSpan);
+    c.appendChild(hintSpan);
+    word.appendChild(c);
     return;
   }
 
-  const showCarets = s.phase === 'point' && !over;
+  // Always render a caret in every gap so the row never reflows ("crams") when the phase changes or
+  // it's the AI's turn; makeCaret marks each pickable / chosen / disabled.
   for (let i = 0; i <= s.word.length; i++) {
-    if (showCarets) word.appendChild(makeCaret(i));
-    else if (s.phase === 'insert' && s.gap === i) word.appendChild(makeCaret(i, true));
+    word.appendChild(makeCaret(i));
     if (i < s.word.length) {
       const inRun = i >= runStart && i < runEnd;
       word.appendChild(makeTile(s.word[i], i, color.get(i), inRun));
@@ -260,16 +262,18 @@ function renderWord(): void {
   }
 }
 
-function makeCaret(gap: number, selected = false): HTMLElement {
-  const showCarets = state.phase === 'point' && !isOver(state);
+function makeCaret(gap: number): HTMLElement {
+  const pickable = state.phase === 'point' && !isOver(state) && isHumanTurn();
+  const chosen = state.phase === 'insert'
+    ? state.gap === gap
+    : (state.phase === 'point' && hint === gap);
   const el = document.createElement('button');
-  el.className = 'caret' + (selected ? ' sel' : '') + (showCarets ? '' : ' disabled');
+  el.className = 'caret' + (pickable ? '' : ' disabled') + (chosen ? ' sel' : '');
   el.dataset.gap = String(gap);
-  if (hint !== null && state.phase === 'point' && hint === gap) el.classList.add('sel');
   const bar = document.createElement('span');
   bar.className = 'bar';
   el.appendChild(bar);
-  if (!showCarets) el.tabIndex = -1;
+  if (!pickable) el.tabIndex = -1;
   return el;
 }
 

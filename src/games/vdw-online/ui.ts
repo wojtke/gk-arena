@@ -254,36 +254,41 @@ function renderLine(): void {
   const witnessColor = over && s.witness ? s.witness.color : -1;
 
   if (s.line.length === 0) {
-    if (s.phase === 'point' && !over) lineEl.appendChild(makeCaret(0));
+    // empty start: one full-width, centred, click-anywhere caret carrying the prompt
+    const c = makeCaret(0);
+    c.classList.add('empty');
     const hintSpan = document.createElement('span');
     hintSpan.className = 'empty-hint';
     hintSpan.textContent = s.phase === 'point'
-      ? 'Pointer: click the caret to point at the first gap.'
-      : 'Painter: pick a colour to paint a token.';
-    lineEl.appendChild(hintSpan);
+      ? 'Pointer: click anywhere here to point at the first gap.'
+      : 'Painter: pick a colour.';
+    c.appendChild(hintSpan);
+    lineEl.appendChild(c);
     return;
   }
 
-  const showCarets = s.phase === 'point' && !over;
+  // Always render a caret in every gap so the row never reflows ("crams") when the phase changes or
+  // it's the AI's turn; makeCaret marks each pickable / chosen / disabled.
   for (let i = 0; i <= s.line.length; i++) {
-    if (showCarets) lineEl.appendChild(makeCaret(i));
-    else if (s.phase === 'paint' && s.gap === i) lineEl.appendChild(makeCaret(i, true));
+    lineEl.appendChild(makeCaret(i));
     if (i < s.line.length) {
       lineEl.appendChild(makeTile(s.line[i], i, witnessIdx.has(i) && s.line[i] === witnessColor));
     }
   }
 }
 
-function makeCaret(gap: number, selected = false): HTMLElement {
-  const showCarets = state.phase === 'point' && !isOver(state);
+function makeCaret(gap: number): HTMLElement {
+  const pickable = state.phase === 'point' && !isOver(state) && isHumanTurn();
+  const chosen = state.phase === 'paint'
+    ? state.gap === gap
+    : (state.phase === 'point' && hint === gap);
   const el = document.createElement('button');
-  el.className = 'caret' + (selected ? ' sel' : '') + (showCarets ? '' : ' disabled');
+  el.className = 'caret' + (pickable ? '' : ' disabled') + (chosen ? ' sel' : '');
   el.dataset.gap = String(gap);
-  if (hint !== null && state.phase === 'point' && hint === gap) el.classList.add('sel');
   const bar = document.createElement('span');
   bar.className = 'bar';
   el.appendChild(bar);
-  if (!showCarets) el.tabIndex = -1;
+  if (!pickable) el.tabIndex = -1;
   return el;
 }
 
