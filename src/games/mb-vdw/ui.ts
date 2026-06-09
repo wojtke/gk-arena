@@ -222,12 +222,17 @@ function renderVdw(s: GameState): { viewBox: string; body: string } {
     const xs = [...win].map(x).sort((a, b) => a - b);
     body.push(`<line x1="${xs[0]}" y1="${baseY}" x2="${xs[xs.length - 1]}" y2="${baseY}" class="ap-line" />`);
   }
+  const HIT = STEP / 2 - 2; // transparent hit radius ≈ half the spacing → generous snapping
   for (let i = 0; i < N; i++) {
-    const cls = ['cell', colorClass(s.owner[i])];
+    const owner = s.owner[i];
+    const cls = ['cell', colorClass(owner)];
     if (win.has(i)) cls.push('win');
-    if (hint === i && !over) body.push(`<circle cx="${x(i)}" cy="${baseY}" r="${R + 4}" class="hint-dot" />`);
-    body.push(`<circle cx="${x(i)}" cy="${baseY}" r="${R}" class="${cls.join(' ')}" data-cell="${i}" />`);
-    body.push(`<text x="${x(i)}" y="${baseY + 24}" class="cell-label">${i + 1}</text>`);
+    const inner: string[] = [];
+    if (hint === i && !over) inner.push(`<circle cx="${x(i)}" cy="${baseY}" r="${R + 4}" class="hint-dot" />`);
+    inner.push(`<circle cx="${x(i)}" cy="${baseY}" r="${R}" class="${cls.join(' ')}" />`);
+    inner.push(`<text x="${x(i)}" y="${baseY + 24}" class="cell-label">${i + 1}</text>`);
+    inner.push(`<circle cx="${x(i)}" cy="${baseY}" r="${HIT}" class="cell-hit" data-cell="${i}" />`);
+    body.push(`<g class="cell-group${owner ? ' used' : ''}">${inner.join('')}</g>`);
   }
   return { viewBox: `0 0 ${W} ${H}`, body: body.join('') };
 }
@@ -241,6 +246,10 @@ function render(): void {
   const board = $('board');
   board.setAttribute('viewBox', viewBox);
   board.innerHTML = body;
+  // drive the hover-preview colour: only on your turn, in the side-to-move's colour
+  const myTurn = !over && isHumanTurn();
+  board.classList.toggle('turn-r', myTurn && state.turn === MAKER);
+  board.classList.toggle('turn-b', myTurn && state.turn !== MAKER);
 
   // status
   const pill = $('turnPill');

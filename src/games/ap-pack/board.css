@@ -11,12 +11,17 @@
 .game-ap-pack .scell { transition: fill .12s ease; }
 .game-ap-pack .scell.free { fill: #eef1f8; stroke: var(--line); stroke-width: 1; }
 .game-ap-pack .scell.free.armed { cursor: pointer; }
-.game-ap-pack .scell.free.armed:hover { fill: #dfe4f2; }
+/* hover tint only when this cell isn't part of the placement preview (else the previewed start cell
+   flickered between the hover fill and the preview colour) */
+.game-ap-pack .scell.free.armed:hover:not(.preview):not(.bad) { fill: #dfe4f2; }
 .game-ap-pack .scell.r { fill: var(--red); }
 .game-ap-pack .scell.b { fill: var(--blue); }
 .game-ap-pack .scell.x { fill: #aab0c0; }
-.game-ap-pack .scell.preview { fill: var(--violet); opacity: .55; }
-.game-ap-pack .scell.bad { fill: var(--red); opacity: .5; }
+/* placement preview = the placing side's colour at low opacity; overlap (can't place) = grey */
+.game-ap-pack .scell.preview { opacity: .5; }
+.game-ap-pack .scell.preview-r { fill: var(--red); }
+.game-ap-pack .scell.preview-b { fill: var(--blue); }
+.game-ap-pack .scell.bad { fill: #9aa1b2; opacity: .7; }
 .game-ap-pack .scell-label { fill: #9aa1b2; font-size: 9px; text-anchor: middle; pointer-events: none; font-variant-numeric: tabular-nums; }
 
 /* Comb tray */

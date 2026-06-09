@@ -366,7 +366,10 @@ function renderStrip(s: GameState): { viewBox: string; body: string } {
     const cls = ['scell', colorClass(s.occupied[i])];
     const isFree = s.occupied[i] === null;
     if (isFree && armed) cls.push('armed');
-    if (prev.has(i)) cls.push(prevOk ? 'preview' : 'bad');
+    if (prev.has(i)) {
+      if (prevOk) cls.push('preview', s.turn === BLUE ? 'preview-b' : 'preview-r');
+      else cls.push('bad');
+    }
     const stroke = hintCells.has(i) && !isOver(s)
       ? ' stroke="var(--violet)" stroke-width="2.5" stroke-dasharray="3 3"' : '';
     body.push(

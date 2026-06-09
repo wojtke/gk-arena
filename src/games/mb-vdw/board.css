@@ -6,11 +6,17 @@
 .game-mb-vdw .board { width: 100%; height: auto; display: block; touch-action: manipulation; }
 
 /* VdW cells */
-.game-mb-vdw .cell { cursor: pointer; transition: r .1s ease, fill .12s ease; }
+.game-mb-vdw { --free: #b3bac9; } /* grey for un-claimed dots (was undefined) */
+.game-mb-vdw .cell { transition: fill .12s ease; }
 .game-mb-vdw .cell.free { fill: var(--free); }
-.game-mb-vdw .cell.free:hover { fill: var(--ink); }
-.game-mb-vdw .cell.r { fill: var(--red); cursor: default; }
-.game-mb-vdw .cell.b { fill: var(--blue); cursor: default; }
+.game-mb-vdw .cell.r { fill: var(--red); }
+.game-mb-vdw .cell.b { fill: var(--blue); }
+/* oversized transparent hit target → clicking/hovering anywhere near a dot snaps to it */
+.game-mb-vdw .cell-hit { fill: transparent; cursor: pointer; }
+.game-mb-vdw .cell-group.used .cell-hit { cursor: default; }
+/* on your turn, hovering a free dot previews your colour: red Maker / blue Breaker */
+.game-mb-vdw .board.turn-r .cell-group:not(.used):hover .cell.free { fill: var(--red); }
+.game-mb-vdw .board.turn-b .cell-group:not(.used):hover .cell.free { fill: var(--blue); }
 .game-mb-vdw .cell.win { animation: mbVdw_pulse 1.1s ease-in-out infinite; }
 .game-mb-vdw .cell-label { fill: #9aa1b2; font-size: 11px; text-anchor: middle; pointer-events: none; font-variant-numeric: tabular-nums; }
 .game-mb-vdw .ap-line { stroke: var(--red); stroke-width: 3; stroke-linecap: round; opacity: .5; }

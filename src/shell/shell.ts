@@ -84,10 +84,6 @@ function renderPicker(app: HTMLElement): void {
         <div><h1>GK Games</h1><p class="tagline">A combinatorial-game arena · pick a game</p></div>
       </div>
     </header>
-    <p class="picker-intro">Twelve two-player games from the Combinatorial Games course. One player builds
-      an object move by move while the other forces — or avoids — an unavoidable pattern. Each card is
-      tagged by theme and how it plays; every game has human-vs-AI, hotseat, and watch-AI modes with four
-      AI strengths.</p>
     <main class="picker-grid">${sorted.map(card).join('')}</main>
     <footer class="foot">
       <span>GK Games · combinatorial games on words &amp; coloured structures</span>
