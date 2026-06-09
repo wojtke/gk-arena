@@ -22,6 +22,15 @@ const SETTINGS_HTML = `
         <input type="range" id="kRange" min="2" max="6" value="3" />
       </div>
       <div class="field">
+        <label for="typeSel">Pattern</label>
+        <select id="typeSel">
+          <option value="crossing" selected>Crossing — the competitive game</option>
+          <option value="nesting">Nesting</option>
+          <option value="alignment">Alignment</option>
+          <option value="any">Any homogeneous</option>
+        </select>
+      </div>
+      <div class="field">
         <label for="roleSel">You play</label>
         <select id="roleSel">
           <option value="R" selected>Maker (red)</option>
@@ -81,7 +90,7 @@ const SIDEBAR_HTML = `
     <ol class="howto-list">
       <li><b>Click two dots</b> to draw an arc between them in your colour.</li>
       <li>You are <b class="red-text">Maker (red)</b> by default — try to build
-        <b id="howtoK">3</b> red arcs that <b>all cross each other</b>.</li>
+        <b id="howtoK">3</b> red arcs that <b id="howtoType">all cross each other</b>.</li>
       <li><b class="blue-text">Breaker (blue)</b> draws arcs too, using up dots so you can't.</li>
       <li>Each dot is used once. Maker always moves first.</li>
       <li>Maker wins the instant the target is reached; otherwise Breaker wins when the board fills.</li>
@@ -110,20 +119,34 @@ const SIDEBAR_HTML = `
 
   <section class="card explainer" id="maths">
     <h2>The maths behind it</h2>
-    <p><b>Why a game?</b> Every ordered matching on <i>2n</i> points must contain a homogeneous
-      set of size about <i>n<sup>1/3</sup></i> (an Erdős–Szekeres-type theorem of Dudek,
-      Grytczuk &amp; Ruciński). So <i>some</i> structure is unavoidable — the game asks whether
-      <b>Maker can force</b> one while owning only her own arcs.</p>
-    <p><b>Maker–Breaker.</b> This is a positional game in the sense of Beck's
-      <i>Tic-Tac-Toe Theory</i>: the winning sets are the <i>k</i>-crossings, Maker claims arcs,
-      Breaker blocks. Maker draws only <b>⌈n/2⌉</b> of the <i>n</i> arcs, so the target <i>k</i> is
-      capped there.</p>
-    <p><b>The AI.</b> The “Potential” opponent uses an <b>Erdős–Selfridge</b>-style weighting of
-      Maker's threats; “Solver” searches the game tree exactly on small boards.</p>
+    <p><b>Unavoidable patterns.</b> Any two arcs relate as exactly one of <i>crossing</i>,
+      <i>nesting</i>, or <i>alignment</i>; a sub-matching is <i>homogeneous</i> if every pair shares one
+      type. Every ordered matching of size <i>n</i> contains a homogeneous sub-matching of size at least
+      <i>n<sup>1/3</sup></i> (an Erdős–Szekeres-type theorem of Dudek, Grytczuk &amp; Ruciński). So
+      <i>some</i> structure is unavoidable — but that is about the <b>whole</b> matching (both colours
+      mixed), so it only motivates the game; it gives no direct bound on what <b>Maker</b> can force
+      with her own arcs.</p>
+    <p><b>Maker–Breaker, almost.</b> Compared with Beck's positional games (<i>Tic-Tac-Toe Theory</i>),
+      the winning sets are the <i>k</i>-crossings of one type, and there are
+      <i>C(2n, 2k)</i> of them — any <i>2k</i> endpoints determine exactly one canonical
+      <i>k</i>-crossing. The Erdős–Selfridge criterion would then suggest Breaker wins when
+      <i>C(2n,2k)·2<sup>−k</sup> &lt; ½</i>.</p>
+    <p><b>But the arcs aren't independent.</b> Drawing arc <i>(i,j)</i> <i>uses up</i> endpoints
+      <i>i, j</i>, so Breaker can kill a red target <b>without taking any of its arcs</b> — just by
+      grabbing an arc that shares an endpoint. The independent-cell model (and hence Erdős–Selfridge)
+      does <b>not</b> apply directly; the “Potential” AI uses it only as a <b>threat heuristic</b>, not
+      a verdict. “Solver” instead searches the game tree exactly on small boards.</p>
+    <p><b>The threshold <i>k*(n)</i>.</b> The largest <i>k ≥ 2</i> Maker can force under optimal play.
+      Maker draws only <b>⌈n/2⌉</b> arcs, so <i>k*(n) ≤ ⌈n/2⌉</i>; its general growth is an
+      <b>open problem</b> (the <i>n<sup>1/3</sup></i> curve is only a reference). Exact minimax for
+      crossing gives <i>k* = 0, 2, 2, 2, 3, 3</i> at <i>n = 3…8</i> — above <i>n<sup>1/3</sup></i> yet
+      below the ⌈n/2⌉ ceiling (at <i>n=3</i> a 2-crossing exists but can't be forced).</p>
     <p class="muted small">References: Dudek, Grytczuk &amp; Ruciński, <i>Ordered unavoidable
-      sub-structures in matchings and random matchings</i> (2024),
+      sub-structures in matchings and random matchings</i>, EJC 31(2) (2024),
       <a href="https://arxiv.org/abs/2210.14042" target="_blank" rel="noopener">arXiv:2210.14042</a>;
-      Beck, <i>Combinatorial Games: Tic-Tac-Toe Theory</i> (2008).</p>
+      <i>Erdős–Szekeres type theorems for ordered uniform matchings</i>, JCTB 170 (2025),
+      <a href="https://arxiv.org/abs/2301.02936" target="_blank" rel="noopener">arXiv:2301.02936</a>;
+      Beck, <i>Tic-Tac-Toe Theory</i> (2008).</p>
   </section>
 `;
 
@@ -191,8 +214,8 @@ function readConfig(seed: number): GameConfig {
   return {
     n,
     k,
-    // Crossing is the only target that is a genuine contest (see DESIGN.md §3); it is the game.
-    type: 'crossing',
+    // Crossing is the genuinely competitive target; nesting / alignment / any are kept as variants.
+    type: ($('typeSel') as HTMLSelectElement).value as GameConfig['type'],
     mode: ($('modeSel') as HTMLSelectElement).value as Mode,
     humanRole: ($('roleSel') as HTMLSelectElement).value as GameConfig['humanRole'],
     aiLevel: {
@@ -421,6 +444,14 @@ function syncLabels(): void {
   $('kLabel').textContent = kRange.value;
   $('kCap').textContent = `(max ${cap})`;
   $('howtoK').textContent = kRange.value; // how-to mirror
+  const typeWord: Record<string, string> = {
+    crossing: 'all cross each other',
+    nesting: 'are all nested',
+    alignment: 'are all aligned (side by side)',
+    any: 'are all the same type',
+  };
+  const t = ($('typeSel') as HTMLSelectElement).value;
+  $('howtoType').textContent = typeWord[t] ?? 'all cross each other';
 }
 
 function syncRoleVisibility(): void {
@@ -461,7 +492,7 @@ export function mount(slots: GameSlots): GameInstance {
     $(id).addEventListener('input', syncLabels);
     $(id).addEventListener('change', () => { syncLabels(); startNewGame(); });
   }
-  for (const id of ['modeSel']) {
+  for (const id of ['modeSel', 'typeSel']) {
     $(id).addEventListener('change', () => { syncLabels(); startNewGame(); });
   }
   $('roleSel').addEventListener('change', () => { syncRoleVisibility(); startNewGame(); });
