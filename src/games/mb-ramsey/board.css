@@ -1,0 +1,29 @@
+/* Board-specific styles for MB Ramsey (the circular-graph board). Scoped under .game-mb-ramsey so
+   they never collide with other games. Generic design-system rules live in common/shared.css. */
+
+.game-mb-ramsey .board-wrap { width: 100%; background: linear-gradient(180deg, #fbfcff 0%, #f4f6fc 100%); border: 1px solid var(--line); border-radius: 12px; padding: 10px; min-height: 180px; display: grid; place-items: center; }
+.game-mb-ramsey .board { width: 100%; height: auto; display: block; touch-action: manipulation; }
+
+/* Ramsey graph */
+.game-mb-ramsey .edge { stroke: var(--free); stroke-width: 2; opacity: .5; transition: stroke .12s ease, opacity .12s ease, stroke-width .12s ease; }
+.game-mb-ramsey .edge.r { stroke: var(--red); stroke-width: 4; opacity: .95; }
+.game-mb-ramsey .edge.b { stroke: var(--blue); stroke-width: 4; opacity: .95; }
+.game-mb-ramsey .edge.win { animation: mbRamsey_pulseStroke 1.1s ease-in-out infinite; filter: drop-shadow(0 1px 4px rgba(229,72,77,.4)); }
+.game-mb-ramsey .edge-hit { stroke: transparent; stroke-width: 16; cursor: pointer; }
+.game-mb-ramsey .edge-hit.taken { cursor: default; }
+.game-mb-ramsey .vertex { fill: #fff; stroke: var(--ink); stroke-width: 2; }
+.game-mb-ramsey .vertex.win { stroke: var(--red); fill: var(--red-weak); }
+.game-mb-ramsey .vlabel { fill: var(--muted); font-size: 11px; text-anchor: middle; dominant-baseline: middle; pointer-events: none; }
+.game-mb-ramsey .hint-dot { fill: none; stroke: var(--violet); stroke-width: 3; stroke-dasharray: 3 5; }
+
+@keyframes mbRamsey_pulseStroke { 0%,100% { stroke-width: 4; } 50% { stroke-width: 7; } }
+
+/* legend mini diagram */
+.game-mb-ramsey .legend-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.game-mb-ramsey .legend-item { margin: 0; text-align: center; }
+.game-mb-ramsey .mini { width: 100%; height: auto; background: #fbfcff; border: 1px solid var(--line); border-radius: 10px; padding: 4px; }
+.game-mb-ramsey .m-v { fill: #fff; stroke: var(--ink); stroke-width: 1.6; }
+.game-mb-ramsey .m-edge line { stroke: var(--red); stroke-width: 2.4; }
+.game-mb-ramsey .legend-item figcaption { margin-top: 5px; font-size: 0.76rem; display: flex; flex-direction: column; }
+.game-mb-ramsey .legend-item figcaption b { font-size: 0.82rem; }
+.game-mb-ramsey .legend-item figcaption span { color: var(--muted); }

@@ -1,0 +1,42 @@
+/* Different Blocks — board-specific styles, scoped under .game-different-blocks. The generic design
+   system (cards, controls, buttons, meter, banner, status, explainers, text helpers) lives in
+   shared.css. The two equal-block reveal colours live on the scope wrapper as custom properties. */
+.game-different-blocks {
+  --blkA: #e5484d; --blkA-weak: rgba(229,72,77,.16);
+  --blkB: #2a9d6b; --blkB-weak: rgba(42,157,107,.16);
+  --run: #6e56cf; --run-weak: rgba(110,86,207,.12);
+}
+
+/* word board: tiles + insertion carets */
+.game-different-blocks .wordbox { position: relative; min-height: 84px; background: linear-gradient(180deg,#fbfcff,#f4f6fc); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; align-items: center; }
+.game-different-blocks .word { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; }
+.game-different-blocks .empty-hint { color: var(--muted); font-size: .9rem; }
+
+.game-different-blocks .tile { position: relative; width: 40px; height: 52px; border-radius: 9px; display: grid; place-items: center; font-weight: 800; font-size: 1.15rem; background: #fff; border: 1px solid var(--line); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.04); animation: differentBlocks_pop .18s ease-out; overflow: hidden; }
+.game-different-blocks .tile .val { position: relative; z-index: 1; }
+/* the offending k-block run gets a boxed backdrop */
+.game-different-blocks .tile.inrun { background: var(--run-weak); border-color: var(--run); }
+/* the two equal blocks pulse in two colours */
+.game-different-blocks .tile.blkA { border-color: var(--blkA); background: var(--blkA-weak); color: var(--blkA); box-shadow: 0 0 0 2px var(--blkA-weak); animation: differentBlocks_pulse 1s ease-in-out infinite; }
+.game-different-blocks .tile.blkB { border-color: var(--blkB); background: var(--blkB-weak); color: var(--blkB); box-shadow: 0 0 0 2px var(--blkB-weak); animation: differentBlocks_pulse 1s ease-in-out infinite; }
+@keyframes differentBlocks_pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes differentBlocks_pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
+/* insertion caret the constructor clicks (point phase) */
+.game-different-blocks .caret { width: 14px; align-self: stretch; display: grid; place-items: center; cursor: pointer; background: transparent; border: none; padding: 0; }
+.game-different-blocks .caret .bar { width: 3px; height: 70%; border-radius: 999px; background: transparent; transition: background .12s; }
+.game-different-blocks .caret:hover .bar { background: var(--blue); }
+.game-different-blocks .caret.sel .bar { background: var(--blue); box-shadow: 0 0 0 2px var(--blue-weak); }
+.game-different-blocks .caret.disabled { cursor: default; }
+.game-different-blocks .caret.disabled:hover .bar { background: transparent; }
+
+.game-different-blocks .palette { display: flex; gap: 8px; flex-wrap: wrap; }
+.game-different-blocks .palette button { position: relative; width: 46px; height: 46px; border-radius: 11px; border: 1px solid var(--line); background: #fff; font: inherit; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: background .12s, transform .05s, border-color .12s; overflow: hidden; }
+.game-different-blocks .palette button:hover:not(:disabled) { background: #f5f6fb; border-color: var(--violet); }
+.game-different-blocks .palette button:active:not(:disabled) { transform: translateY(1px); }
+.game-different-blocks .palette button:disabled { opacity: .4; cursor: not-allowed; }
+.game-different-blocks .palette .palette-hint { align-self: center; color: var(--muted); font-size: .82rem; }
+
+/* block-reveal text swatches in the how-to list */
+.game-different-blocks .blkA-text { color: var(--blkA); font-weight: 700; }
+.game-different-blocks .blkB-text { color: var(--blkB); font-weight: 700; }

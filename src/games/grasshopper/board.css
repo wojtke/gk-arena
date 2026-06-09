@@ -1,0 +1,51 @@
+/* Board-specific styles for Grasshopper, scoped under .game-grasshopper so they cannot collide with
+   other games. The generic design system (cards, controls, buttons, meter, banner, explainers, text
+   helpers) lives in common/shared.css; the 3-pane layout lives in shell.css. */
+
+/* phase label ------------------------------------------------------------- */
+.game-grasshopper .phaselabel { font-size: .9rem; font-weight: 700; color: var(--muted); margin: 4px 0 10px; min-height: 1.2em; }
+
+/* built word W + grasshopper marker + landing targets --------------------- */
+.game-grasshopper .wordbox { position: relative; min-height: 72px; background: linear-gradient(180deg,#fbfcff,#f4f6fc); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; align-items: center; }
+.game-grasshopper .word { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0; }
+.game-grasshopper .word.empty::before { content: "(empty word — the grasshopper waits before the word)"; color: var(--muted); font-size: .86rem; }
+
+.game-grasshopper .tile { position: relative; width: 38px; height: 46px; margin: 3px; border-radius: 9px; display: grid; place-items: center; font-weight: 800; font-size: 1.12rem; background: #fff; border: 1px solid var(--line); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.04); animation: grasshopper_pop .18s ease-out; }
+.game-grasshopper .tile.past { opacity: .42; background: #f3f4f9; }
+.game-grasshopper .tile.fresh { border-color: var(--blue); box-shadow: 0 0 0 2px var(--blue-weak); animation: grasshopper_glow 1.1s ease-in-out infinite; }
+.game-grasshopper .tile.pre { width: 30px; background: transparent; border: 1px dashed var(--line); }
+
+/* hop landing targets */
+.game-grasshopper .tile.target { cursor: pointer; border-color: var(--red); box-shadow: 0 0 0 2px var(--red-weak); }
+.game-grasshopper .tile.target:hover { background: var(--red-weak); }
+.game-grasshopper .tile.target.suggest { border-color: var(--violet); box-shadow: 0 0 0 3px rgba(110,86,207,.35); }
+.game-grasshopper .step-badge { position: absolute; top: -10px; right: -6px; font-size: .62rem; font-weight: 800; color: #fff; background: var(--red); border-radius: 8px; padding: 1px 5px; }
+.game-grasshopper .tile.target-2 .step-badge { background: var(--violet); }
+
+/* the grasshopper marker rides above its tile */
+.game-grasshopper .hopper { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 1.15rem; line-height: 1; animation: grasshopper_bob 1.1s ease-in-out infinite; }
+
+@keyframes grasshopper_pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes grasshopper_glow { 0%,100% { box-shadow: 0 0 0 2px var(--blue-weak); } 50% { box-shadow: 0 0 0 4px var(--blue-weak); } }
+@keyframes grasshopper_bob { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-3px); } }
+@keyframes grasshopper_pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+
+/* palette ----------------------------------------------------------------- */
+.game-grasshopper .palette { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+.game-grasshopper .palette button { width: 46px; height: 46px; border-radius: 11px; border: 1px solid var(--line); background: #fff; font: inherit; font-weight: 800; font-size: 1.15rem; cursor: pointer; transition: background .12s, transform .05s, border-color .12s; }
+.game-grasshopper .palette button:hover:not(:disabled) { background: #f5f6fb; border-color: var(--blue); }
+.game-grasshopper .palette button:active:not(:disabled) { transform: translateY(1px); }
+.game-grasshopper .palette button:disabled { opacity: .4; cursor: not-allowed; }
+.game-grasshopper .palette button.suggest { box-shadow: 0 0 0 2px rgba(110,86,207,.35); border-color: var(--violet); }
+.game-grasshopper .palette-hint { font-size: .82rem; color: var(--muted); margin-left: 4px; }
+
+/* inspected word S -------------------------------------------------------- */
+.game-grasshopper .inspectbox { margin-top: 16px; }
+.game-grasshopper .inspect-label { font-size: .82rem; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+.game-grasshopper .inspected { display: flex; flex-wrap: wrap; align-items: center; gap: 0; min-height: 44px; padding: 8px; background: #fff; border: 1px dashed var(--line); border-radius: 10px; }
+.game-grasshopper .inspected.empty::before { content: "(nothing inspected yet)"; color: var(--muted); font-size: .82rem; }
+.game-grasshopper .stile { width: 34px; height: 38px; margin: 3px; border-radius: 8px; display: grid; place-items: center; font-weight: 800; font-size: 1.05rem; background: #fff; border: 1px solid var(--line); color: var(--ink); animation: grasshopper_pop .18s ease-out; }
+.game-grasshopper .stile.fresh { border-color: var(--red); box-shadow: 0 0 0 2px var(--red-weak); }
+.game-grasshopper .stile.win-a { background: var(--red-weak); border-color: var(--red); color: var(--red); }
+.game-grasshopper .stile.win-b { background: var(--blue-weak); border-color: var(--blue); color: var(--blue); }
+.game-grasshopper .stile.pulse { animation: grasshopper_pulse 1.0s ease-in-out infinite; }

@@ -1,0 +1,40 @@
+/* AP-Pack board-specific styles, scoped under .game-ap-pack. Generic design-system rules live in
+   common/shared.css; only this game's strip/tray/chips visuals and its --free var live here. */
+.game-ap-pack { --free: #c4cad8; }
+
+.game-ap-pack .board-wrap { width: 100%; background: linear-gradient(180deg, #fbfcff 0%, #f4f6fc 100%); border: 1px solid var(--line); border-radius: 12px; padding: 12px; min-height: 110px; display: grid; place-items: center; }
+.game-ap-pack .board { width: 100%; height: auto; display: block; touch-action: manipulation; }
+.game-ap-pack .board.shake { animation: apPack_shake .38s ease; }
+@keyframes apPack_shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
+
+/* Strip cells */
+.game-ap-pack .scell { transition: fill .12s ease; }
+.game-ap-pack .scell.free { fill: #eef1f8; stroke: var(--line); stroke-width: 1; }
+.game-ap-pack .scell.free.armed { cursor: pointer; }
+.game-ap-pack .scell.free.armed:hover { fill: #dfe4f2; }
+.game-ap-pack .scell.r { fill: var(--red); }
+.game-ap-pack .scell.b { fill: var(--blue); }
+.game-ap-pack .scell.x { fill: #aab0c0; }
+.game-ap-pack .scell.preview { fill: var(--violet); opacity: .55; }
+.game-ap-pack .scell.bad { fill: var(--red); opacity: .5; }
+.game-ap-pack .scell-label { fill: #9aa1b2; font-size: 9px; text-anchor: middle; pointer-events: none; font-variant-numeric: tabular-nums; }
+
+/* Comb tray */
+.game-ap-pack .tray { display: flex; flex-wrap: wrap; gap: 10px; }
+.game-ap-pack .combtile { border: 1px solid var(--line); border-radius: 12px; background: #fff; padding: 8px 10px 6px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: border-color .12s, box-shadow .12s, background .12s; min-width: 78px; }
+.game-ap-pack .combtile:hover:not(.placed) { border-color: var(--violet); background: #f8f7fe; }
+.game-ap-pack .combtile.selected { border-color: var(--violet); box-shadow: 0 0 0 2px rgba(110,86,207,.25); background: #f4f2fd; }
+.game-ap-pack .combtile.placed { opacity: .4; cursor: default; }
+.game-ap-pack .combtile svg { display: block; }
+.game-ap-pack .combtile .comb-mark { fill: var(--red); }
+.game-ap-pack .combtile.placed .comb-mark { fill: var(--free); }
+.game-ap-pack .combtile .comb-line { stroke: var(--line); stroke-width: 1.5; }
+.game-ap-pack .combtile figcaption { font-size: .74rem; color: var(--muted); font-weight: 600; }
+
+/* Chips (two-player allowed d / ℓ) */
+.game-ap-pack .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.game-ap-pack .chip { padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line); background: #fbfcff; font: inherit; font-size: .8rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .12s; }
+.game-ap-pack .chip.on { background: var(--violet); border-color: var(--violet); color: #fff; }
+
+/* tile focus ring (combtile not covered by shared button focus rule) */
+.game-ap-pack .combtile:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }

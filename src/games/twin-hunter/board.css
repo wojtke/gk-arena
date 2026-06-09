@@ -1,0 +1,44 @@
+/* Twin Hunter — board-specific styles, scoped under .game-twin-hunter. The generic design system
+   (cards, controls, buttons, meter, banner, status, explainers, text helpers) lives in shared.css.
+   Game-specific CSS custom properties (the two shuffle-reveal copies) live on the scope wrapper. */
+.game-twin-hunter {
+  --twinA: #e5484d; --twinA-weak: rgba(229,72,77,.16);
+  --twinB: #2a9d6b; --twinB-weak: rgba(42,157,107,.16);
+}
+
+/* sequence board: tiles + insertion carets */
+.game-twin-hunter .wordbox { position: relative; min-height: 84px; background: linear-gradient(180deg,#fbfcff,#f4f6fc); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; align-items: center; }
+.game-twin-hunter .word { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; }
+.game-twin-hunter .empty-hint { color: var(--muted); font-size: .9rem; }
+
+.game-twin-hunter .tile { position: relative; width: 40px; height: 52px; border-radius: 9px; display: grid; place-items: center; font-weight: 800; font-size: 1.15rem; background: #fff; border: 1px solid var(--line); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.04); animation: twinHunter_pop .18s ease-out; overflow: hidden; }
+.game-twin-hunter .tile.fresh { border-color: var(--violet); box-shadow: 0 0 0 2px rgba(110,86,207,.25); }
+/* faint vertical value bar (perm) showing order type */
+.game-twin-hunter .tile .valbar { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(110,86,207,.16); border-top: 1.5px solid rgba(110,86,207,.4); pointer-events: none; }
+.game-twin-hunter .tile .val { position: relative; z-index: 1; }
+/* two-colour shuffle reveal */
+.game-twin-hunter .tile.twinA { border-color: var(--twinA); background: var(--twinA-weak); color: var(--twinA); box-shadow: 0 0 0 2px var(--twinA-weak); }
+.game-twin-hunter .tile.twinB { border-color: var(--twinB); background: var(--twinB-weak); color: var(--twinB); box-shadow: 0 0 0 2px var(--twinB-weak); }
+.game-twin-hunter .tile.twinA .valbar { background: var(--twinA-weak); border-top-color: var(--twinA); }
+.game-twin-hunter .tile.twinB .valbar { background: var(--twinB-weak); border-top-color: var(--twinB); }
+@keyframes twinHunter_pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* insertion caret the forcer clicks (point phase) */
+.game-twin-hunter .caret { width: 14px; align-self: stretch; display: grid; place-items: center; cursor: pointer; background: transparent; border: none; padding: 0; }
+.game-twin-hunter .caret .bar { width: 3px; height: 70%; border-radius: 999px; background: transparent; transition: background .12s; }
+.game-twin-hunter .caret:hover .bar { background: var(--blue); }
+.game-twin-hunter .caret.sel .bar { background: var(--blue); box-shadow: 0 0 0 2px var(--blue-weak); }
+.game-twin-hunter .caret.disabled { cursor: default; }
+.game-twin-hunter .caret.disabled:hover .bar { background: transparent; }
+
+.game-twin-hunter .palette { display: flex; gap: 8px; flex-wrap: wrap; }
+.game-twin-hunter .palette button { position: relative; width: 46px; height: 46px; border-radius: 11px; border: 1px solid var(--line); background: #fff; font: inherit; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: background .12s, transform .05s, border-color .12s; overflow: hidden; }
+.game-twin-hunter .palette button:hover:not(:disabled) { background: #f5f6fb; border-color: var(--violet); }
+.game-twin-hunter .palette button:active:not(:disabled) { transform: translateY(1px); }
+.game-twin-hunter .palette button:disabled { opacity: .4; cursor: not-allowed; }
+.game-twin-hunter .palette button .valbar { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(110,86,207,.14); border-top: 1.5px solid rgba(110,86,207,.35); pointer-events: none; }
+.game-twin-hunter .palette .palette-hint { align-self: center; color: var(--muted); font-size: .82rem; }
+
+/* twin-reveal text swatches in the how-to list */
+.game-twin-hunter .twinA-text { color: var(--twinA); font-weight: 700; }
+.game-twin-hunter .twinB-text { color: var(--twinB); font-weight: 700; }

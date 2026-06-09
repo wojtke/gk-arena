@@ -1,0 +1,197 @@
+% Kompilacja: pdflatex dokumentacja_teoretyczna.tex (dwukrotnie)
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{tikz}
+\usepackage[margin=2.6cm]{geometry}
+\usepackage[hidelinks]{hyperref}
+
+\theoremstyle{definition}
+\newtheorem{definicja}{Definicja}[section]
+\theoremstyle{plain}
+\newtheorem{twierdzenie}{Twierdzenie}[section]
+\newtheorem{wniosek}[twierdzenie]{Wniosek}
+\theoremstyle{remark}
+\newtheorem*{uwaga}{Uwaga}
+
+% --- pomocniczy rysunek: dwa łuki nad punktami na prostej ---
+% #1,#2 = końce łuku czerwonego; #3,#4 = końce łuku niebieskiego
+\newcommand{\luki}[4]{%
+\begin{tikzpicture}[baseline=-2pt,scale=0.52]
+  \foreach \x in {1,2,3,4} { \fill (\x,0) circle (1.7pt); \node[below=2pt,font=\scriptsize] at (\x,0) {\x}; }
+  \draw[red!80!black,very thick] (#1,0) to[bend left=70] (#2,0);
+  \draw[blue!75!black,very thick] (#3,0) to[bend left=70] (#4,0);
+\end{tikzpicture}}
+
+\title{\large Gry kombinatoryczne\\[2pt]
+\Large Arc Match --- gra Maker--Breaker na uporządkowanych skojarzeniach\\[4pt]
+\large Dokumentacja teoretyczna}
+\author{Wojciech Jasiński}
+\date{Czerwiec 2026}
+
+\begin{document}
+\maketitle
+
+\section{Opis gry}
+
+\emph{Arc Match} jest dwuosobową grą typu \textbf{Maker--Breaker} rozgrywaną na
+\textbf{uporządkowanym skojarzeniu}. Na prostej leży $2n$ ponumerowanych punktów. W swoim ruchu gracz
+wybiera dwa jeszcze nieużyte punkty i łączy je \textbf{łukiem w swoim kolorze}. Każdy punkt może być
+końcem co najwyżej jednego łuku, więc suma wszystkich narysowanych łuków jest jednym uporządkowanym
+skojarzeniem, pokolorowanym wedle tego, kto narysował dany łuk.
+
+Gracz \textbf{Maker} (czerwony) chce zbudować \emph{spośród własnych łuków} rodzinę $k$ łuków, które
+\textbf{parami się przecinają} (krzyżują). Gracz \textbf{Breaker} (niebieski) stara się mu w tym
+przeszkodzić. \textbf{Maker rozpoczyna grę.} Maker wygrywa w chwili, gdy jego czerwone łuki zawierają
+poszukiwany wzorzec rozmiaru $k$; Breaker wygrywa, gdy plansza się zapełni (lub żadne dokończenie wzorca
+przez Makera nie jest już możliwe), a wzorzec nie powstał. Remisy rozstrzygamy na korzyść Breakera ---
+zgodnie ze standardową konwencją gier Maker--Breaker.
+
+Oprócz wzorca \emph{krzyżowania} gra dopuszcza także cele alternatywne (\emph{zagnieżdżenie},
+\emph{ułożenie}, dowolny pojedynczy typ) oraz tryb \emph{punktowy} (bez progu --- liczy się największa
+jednorodna rodzina czerwona). W dalszej części skupiamy się na celu podstawowym, czyli krzyżowaniu,
+ponieważ daje on najbardziej czytelny i strategicznie interesujący przebieg gry; dla zagnieżdżenia i
+ułożenia Maker w praktyce wymusza maksymalny rozmiar niemal niezależnie od gry Breakera.
+
+\section{Definicje}
+
+\begin{definicja}[Uporządkowane skojarzenie]
+\emph{Uporządkowanym skojarzeniem} rozmiaru $n$ nazywamy zbiór $n$ krawędzi (łuków), które parami nie
+mają wspólnego końca, narysowanych na $2n$ liniowo uporządkowanych punktach $1,\dots,2n$. Każdy punkt
+jest końcem dokładnie jednej krawędzi.
+\end{definicja}
+
+Definicja powyższa opisuje skojarzenie \emph{pełne} (stan końcowy, po narysowaniu wszystkich $n$
+łuków). W trakcie rozgrywki plansza jest skojarzeniem \emph{częściowym} --- zbiorem dotąd narysowanych,
+parami rozłącznych łuków, w którym część punktów jest jeszcze wolna.
+
+\begin{definicja}[Trzy wzajemne położenia]
+Dla dwóch krawędzi $e=(a,b)$ oraz $f=(c,d)$, gdzie $a<b$, $c<d$ i bez straty ogólności $a<c$, zachodzi
+\emph{dokładnie jeden} z przypadków:
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\textbf{Ułożenie} ($a<b<c<d$) & rozłączne, obok siebie & \luki{1}{2}{3}{4}\\[10pt]
+\textbf{Zagnieżdżenie} ($a<c<d<b$) & jedno wewnątrz drugiego & \luki{1}{4}{2}{3}\\[10pt]
+\textbf{Krzyżowanie} ($a<c<b<d$) & przeplatające się & \luki{1}{3}{2}{4}\\
+\end{tabular}
+\end{center}
+\end{definicja}
+
+\begin{definicja}[Podskojarzenie jednorodne]
+Podskojarzenie jest \emph{jednorodne} typu $T$, jeśli \emph{każda} para jego krawędzi ma typ $T$.
+Postaci kanoniczne rodziny jednorodnej rozmiaru $k$ (krawędzie $e_i=(a_i,b_i)$ uporządkowane wedle
+$a_i$):
+\[
+\begin{aligned}
+k\text{-krzyżowanie:}\quad & a_1<a_2<\dots<a_k< b_1<b_2<\dots<b_k,\\
+k\text{-zagnieżdżenie:}\quad & a_1<a_2<\dots<a_k< b_k<\dots<b_2<b_1,\\
+k\text{-ułożenie:}\quad & a_1<b_1< a_2<b_2< \dots< a_k<b_k.
+\end{aligned}
+\]
+\end{definicja}
+
+\paragraph{Przykład ($n=3$, punkty $1,\dots,6$).}
+Skojarzenie $\{(1,4),(2,5),(3,6)\}$ daje $a\!:1<2<3 < b\!:4<5<6$, czyli \textbf{3-krzyżowanie}.
+Skojarzenie $\{(1,6),(2,5),(3,4)\}$ daje $a\!:1<2<3 < b\!:6>5>4$, czyli \textbf{3-zagnieżdżenie}.
+Skojarzenie $\{(1,2),(3,4),(5,6)\}$ jest \textbf{3-ułożeniem}.
+
+\section{Twierdzenia}
+
+Punktem wyjścia jest obserwacja, że jednorodność jest w pełnym skojarzeniu \emph{nieunikniona} ---
+co czyni interesującym pytanie, czy Maker potrafi ją \emph{wymusić}, dysponując jedynie połową łuków.
+
+\begin{twierdzenie}[Erdős--Szekeres dla skojarzeń; Dudek, Grytczuk, Ruciński~\cite{dgr-unavoidable}]
+\label{tw:es}
+Każde uporządkowane skojarzenie rozmiaru $n$ zawiera podskojarzenie jednorodne (krzyżowanie,
+zagnieżdżenie lub ułożenie) rozmiaru co najmniej $n^{1/3}$.
+\end{twierdzenie}
+
+Grę modelujemy jako \textbf{grę pozycyjną Maker--Breaker} na hipergrafie $H$, którego wierzchołkami są
+\emph{możliwe łuki}, a zbiorami wygrywającymi --- jednorodne podskojarzenia rozmiaru $k$ (Beck,
+\emph{Tic-Tac-Toe Theory}~\cite{beck}). W tym języku obowiązuje klasyczne kryterium Erdősa--Selfridge'a.
+
+\begin{twierdzenie}[Kryterium Erdősa--Selfridge'a]
+\label{tw:es-selfridge}
+Jeżeli dla rodziny zbiorów wygrywających $\mathcal{F}$ zachodzi
+\[
+\sum_{A\in\mathcal{F}} 2^{-|A|} < \tfrac12,
+\]
+to Breaker (gracz drugi) ma strategię wygrywającą. Ponieważ tutaj wszystkie zbiory wygrywające mają
+rozmiar $k$, warunek przyjmuje postać $W(n,k,T)\cdot 2^{-k} < \tfrac12$, gdzie $W(n,k,T)$ to liczba
+jednorodnych podskojarzeń rozmiaru $k$ na $2n$ punktach.
+\end{twierdzenie}
+
+\begin{uwaga}
+\textbf{Istotne zastrzeżenie.} Klasyczne twierdzenie Erdősa--Selfridge'a zakłada, że elementy zbioru
+bazowego są \emph{niezależnie} zajmowalne. W naszej grze zajęcie łuku \emph{zużywa jego dwa punkty},
+więc łuki dzielące punkt nie mogą współistnieć --- jest to ograniczenie typu rozłączności
+(matroidalne), którego podstawowe twierdzenie nie modeluje. Dlatego Twierdzenie~\ref{tw:es-selfridge}
+jest tu \emph{jednostronnym warunkiem wystarczającym} i \emph{silną heurystyką} (wykorzystaną przez
+sztuczną inteligencję poziomu~2), a nie gotowym rozstrzygnięciem gry. Precyzyjne uwzględnienie
+rozłączności zmienia zliczanie $W(n,k,T)$ i jest właściwym kierunkiem dalszej analizy.
+\end{uwaga}
+
+\section{Próg gry $k^*(n)$}
+
+\begin{definicja}[Próg gry]
+$k^*(n)$ to największe $k$, które Maker potrafi wymusić na $2n$ punktach przy optymalnej grze obu stron.
+\end{definicja}
+
+Ponieważ Maker rysuje tylko $\lceil n/2 \rceil$ z $n$ łuków, mamy natychmiast
+\[
+k^*(n) \le \Big\lceil \tfrac{n}{2} \Big\rceil .
+\]
+Z drugiej strony Twierdzenie~\ref{tw:es} dotyczy \emph{całego} skojarzenia (obu kolorów), więc nie
+ogranicza bezpośrednio $k^*(n)$ --- Maker włada jedynie połową łuków, a poszukiwany wzorzec ma być
+jednobarwny. Dokładne zachowanie $k^*(n)$ pozostaje \textbf{problemem otwartym}; wartość $n^{1/3}$
+traktujemy jedynie jako asymptotyczną \emph{krzywą odniesienia}. Próg $k^*(n)$ szacujemy empirycznie
+symulacjami AI--vs--AI (gracze poziomu~2; dla małych $n$ można go też wyznaczyć dokładnym solverem).
+Wyniki zbiera Tabela~\ref{tab:kstar}: dla $n\ge 4$ próg $k^*(n)$ leży \emph{powyżej} krzywej $n^{1/3}$ i
+\emph{poniżej} pułapu $\lceil n/2\rceil$, natomiast dla $n=3$ plansza jest zbyt mała, by Maker wymusił
+choćby $k=2$.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{c|cccccc}
+$n$ & 3 & 4 & 5 & 6 & 7 & 8\\\hline
+$k^*(n)$ & 0 & 2 & 2 & 2 & 3 & 3\\
+$\lceil n/2\rceil$ & 2 & 2 & 3 & 3 & 4 & 4\\
+$n^{1/3}$ & 1.44 & 1.59 & 1.71 & 1.82 & 1.91 & 2.00\\
+\end{tabular}
+\caption{Empiryczny próg $k^*(n)$ (Maker poz.~2 vs Breaker poz.~2, cel: krzyżowanie, próg wygranej
+$\ge 50\%$ na 100 grach) na tle pułapu $\lceil n/2\rceil$ i krzywej nieuniknioności $n^{1/3}$.}
+\label{tab:kstar}
+\end{table}
+
+\section{Podsumowanie}
+
+Arc Match osadza klasyczną teorię gier pozycyjnych Maker--Breaker w bogatym, wizualnym kontekście
+uporządkowanych skojarzeń. Nieuniknioność jednorodności (Twierdzenie~\ref{tw:es}) gwarantuje, że gra
+nie jest jałowa, a kryterium Erdősa--Selfridge'a dostarcza zarówno teoretycznego ograniczenia, jak i
+praktycznej heurystyki dla komputerowego przeciwnika. Najciekawszym elementem teoretycznym jest
+zastrzeżenie o rozłączności łuków: jest to subtelność, której podstawowe twierdzenie nie obejmuje, oraz
+naturalny punkt wyjścia do dalszych badań progu $k^*(n)$.
+
+\begin{thebibliography}{9}
+\bibitem{dgr-unavoidable}
+A.~Dudek, J.~Grytczuk, A.~Ruciński,
+\emph{Ordered unavoidable sub-structures in matchings and random matchings},
+arXiv:2210.14042, 2022.
+\bibitem{dgr-eszekeres}
+A.~Dudek, J.~Grytczuk, A.~Ruciński,
+\emph{Erdős--Szekeres type theorems for ordered uniform matchings},
+arXiv:2301.02936, 2023.
+\bibitem{dgr-twins}
+A.~Dudek, J.~Grytczuk, A.~Ruciński,
+\emph{Twins in ordered hyper-matchings},
+arXiv:2310.01394, 2023.
+\bibitem{beck}
+J.~Beck,
+\emph{Combinatorial Games: Tic-Tac-Toe Theory},
+Cambridge University Press, 2008.
+\end{thebibliography}
+
+\end{document}

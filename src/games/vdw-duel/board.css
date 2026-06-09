@@ -1,0 +1,35 @@
+/* VdW Duel — board-specific styles, scoped under .game-vdw-duel. The generic design system
+   (cards, controls, buttons, meter, banner, status, explainers, text helpers) lives in shared.css. */
+.game-vdw-duel {
+  --red: #e5484d; --red-weak: rgba(229,72,77,.14);
+  --blue: #3e63dd; --blue-weak: rgba(62,99,221,.14);
+}
+
+/* the token line: tiles + insertion carets */
+.game-vdw-duel .linebox { position: relative; min-height: 84px; background: linear-gradient(180deg,#fbfcff,#f4f6fc); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; align-items: center; }
+.game-vdw-duel .line { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; }
+.game-vdw-duel .empty-hint { color: var(--muted); font-size: .9rem; }
+
+.game-vdw-duel .tile { position: relative; width: 40px; height: 52px; border-radius: 9px; display: grid; place-items: center; font-weight: 800; font-size: 1.05rem; background: #fff; border: 1px solid var(--line); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.04); animation: vdwDuel_pop .18s ease-out; }
+.game-vdw-duel .tile .val { position: relative; z-index: 1; font-variant-numeric: tabular-nums; }
+.game-vdw-duel .tile.red { border-color: var(--red); background: var(--red-weak); color: var(--red); }
+.game-vdw-duel .tile.blue { border-color: var(--blue); background: var(--blue-weak); color: var(--blue); }
+.game-vdw-duel .tile.witness { animation: vdwDuel_pulse 1s ease-in-out infinite; box-shadow: 0 0 0 3px currentColor; z-index: 2; }
+@keyframes vdwDuel_pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes vdwDuel_pulse { 0%,100% { box-shadow: 0 0 0 2px currentColor; } 50% { box-shadow: 0 0 0 5px currentColor; } }
+
+/* insertion caret — coloured by whose turn it is (you always drop your own colour) */
+.game-vdw-duel .caret { width: 16px; align-self: stretch; display: grid; place-items: center; cursor: pointer; background: transparent; border: none; padding: 0; }
+.game-vdw-duel .caret .bar { width: 3px; height: 70%; border-radius: 999px; background: transparent; transition: background .12s; }
+.game-vdw-duel .caret:hover .bar { background: var(--red); }
+.game-vdw-duel .caret.blue:hover .bar { background: var(--blue); }
+.game-vdw-duel .caret.sel .bar { background: var(--red); box-shadow: 0 0 0 2px var(--red-weak); }
+.game-vdw-duel .caret.blue.sel .bar { background: var(--blue); box-shadow: 0 0 0 2px var(--blue-weak); }
+.game-vdw-duel .caret.disabled { cursor: default; }
+.game-vdw-duel .caret.disabled:hover .bar { background: transparent; }
+
+/* blue meter variants */
+.game-vdw-duel .meter-fill.blue { background: linear-gradient(90deg,#9db1f0,var(--blue)); }
+.game-vdw-duel .meter-value.blue { color: var(--blue); }
+.game-vdw-duel .meter-label.blue-text { color: var(--blue); }
+.game-vdw-duel .meter-label.red-text { color: var(--red); }

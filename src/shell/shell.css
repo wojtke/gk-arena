@@ -1,0 +1,51 @@
+/* The arena shell: page frame, the picker grid, and the collapsible 3-pane game layout.
+   All shell element ids are namespaced `hub-*` so they never collide with a game's ids. */
+#app { max-width: 1180px; margin: 0 auto; padding: 22px clamp(14px,3vw,28px) 40px; }
+.topbar-left { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.hub-back { flex: none; align-self: center; }
+
+/* collapsible left-panel cards (click the heading to fold) */
+.card.collapsible > h2 { cursor: pointer; user-select: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.card.collapsible > h2::after { content: '▾'; font-size: .8em; color: var(--muted); transition: transform .15s ease; }
+.card.collapsible > h2:hover::after { color: var(--violet); }
+.card.collapsed > h2 { margin-bottom: 0; }
+.card.collapsed > h2::after { transform: rotate(-90deg); }
+.card.collapsed > :not(h2) { display: none; }
+
+/* ---- picker ---- */
+.picker-intro { margin: 0 0 18px; color: var(--muted); font-size: .92rem; max-width: 70ch; }
+.picker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.game-card { display: flex; flex-direction: column; gap: 10px; text-align: left; padding: 18px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); cursor: pointer; font: inherit; color: var(--ink); transition: transform .08s, border-color .12s, box-shadow .12s; }
+.game-card:hover { transform: translateY(-2px); border-color: var(--violet); box-shadow: 0 2px 4px rgba(20,25,40,.06), 0 14px 32px rgba(20,25,40,.10); }
+.game-card:active { transform: translateY(0); }
+.game-card .gc-head { display: flex; align-items: center; gap: 12px; }
+.game-card .gc-icon { display: grid; place-items: center; width: 54px; height: 38px; background: #fbfcff; border: 1px solid var(--line); border-radius: 10px; flex: none; }
+.game-card h3 { margin: 0; font-size: 1.06rem; letter-spacing: -.01em; }
+.game-card .gc-tagline { margin: 1px 0 0; color: var(--muted); font-size: .82rem; }
+.game-card .gc-blurb { font-size: .86rem; line-height: 1.45; color: var(--ink); margin: 0; }
+/* card tags: family (colour-coded) · mechanic · concept keywords */
+.gc-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 4px; }
+.gc-tag { font-size: .72rem; font-weight: 600; border-radius: 999px; padding: 2px 9px; background: #eef0f6; color: var(--muted); white-space: nowrap; }
+.gc-tag.mech { font-weight: 700; background: rgba(110,86,207,.10); color: var(--violet); }
+.gc-tag.fam { font-weight: 700; }
+.gc-tag.fam-thue { background: rgba(229,72,77,.12); color: var(--red); }
+.gc-tag.fam-twins { background: rgba(42,157,107,.14); color: #2a9d6b; }
+.gc-tag.fam-vdw { background: rgba(62,99,221,.12); color: var(--blue); }
+.gc-tag.fam-ramsey { background: rgba(180,83,9,.14); color: #b45309; }
+.gc-tag.fam-packing { background: rgba(14,116,144,.14); color: #0e7490; }
+.gc-tag.fam-matchings { background: rgba(110,86,207,.12); color: var(--violet); }
+
+/* ---- 2-column game layout (left panel: settings + hints + explainers · right: board) ---- */
+.arena2 { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 18px; align-items: start; }
+/* The two slot wrappers are `display: contents`, so every card (settings + hints + explainers)
+   becomes a direct flex item of .panel and stacks with a uniform gap. (A sibling `.card + .card`
+   margin can't space the settings card from the first explainer card — they live in different
+   wrappers, so they're never DOM-adjacent siblings — hence the flex gap, neutralising that margin.) */
+.panel { min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.panel > #hub-settings, .panel > #hub-sidebar { display: contents; }
+.panel .card + .card { margin-top: 0; }
+.stage { min-width: 0; }
+
+@media (max-width: 900px) {
+  .arena2 { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,190 @@
+% Kompilacja: pdflatex prezentacja.tex (dwukrotnie).
+% Motyw "Metropolis" odtworzony samodzielnie w preambule (pakiet beamertheme-metropolis nie jest
+% zainstalowany w tym środowisku). Aby użyć oryginalnego motywu: tlmgr install beamertheme-metropolis
+% pgfopts, a następnie zastąpić blok "MOTYW" linią \usetheme{metropolis}.
+\documentclass[11pt,aspectratio=169]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tikz}
+
+% ======================= MOTYW w stylu Metropolis =======================
+\usetheme{default}
+\setbeamertemplate{navigation symbols}{}
+\definecolor{mteal}{HTML}{2A9D8F}
+\definecolor{morange}{HTML}{E07A2F}
+\definecolor{mdark}{HTML}{2D3142}
+\setbeamercolor{normal text}{fg=mdark}
+\setbeamercolor{structure}{fg=mteal}
+\setbeamercolor{title}{fg=morange}
+\setbeamercolor{frametitle}{fg=morange,bg=white}
+\setbeamercolor{itemize item}{fg=mteal}
+\setbeamercolor{itemize subitem}{fg=mteal}
+\setbeamerfont{title}{series=\bfseries,size=\LARGE}
+\setbeamerfont{frametitle}{series=\bfseries,size=\Large}
+\setbeamertemplate{itemize item}{\small\raise0.5pt\hbox{\textbullet}}
+\setbeamertemplate{itemize subitem}{--}
+% frametitle: tytuł u góry + cienka turkusowa linia
+\setbeamertemplate{frametitle}{%
+  \vspace*{0.7em}\hspace*{0.1em}%
+  {\usebeamerfont{frametitle}\usebeamercolor[fg]{frametitle}\insertframetitle}\par
+  \vspace*{0.15em}{\color{mteal}\rule{\textwidth}{1.1pt}}\par}
+% footline: numer slajdu po prawej, cienka linia
+\setbeamertemplate{footline}{%
+  \hbox{\color{mteal}\rule{\paperwidth}{1pt}}%
+  \hfill{\footnotesize\color{mdark!70}\insertframenumber\,/\,\inserttotalframenumber\ \ }\vspace*{2pt}}
+% slajd sekcji w stylu Metropolis (pasek + wyśrodkowany tytuł)
+\AtBeginSection[]{%
+  \begin{frame}[plain]
+    \centering\vfill
+    {\usebeamerfont{frametitle}\color{morange}\insertsectionhead}\\[0.6em]
+    {\color{mteal}\rule{0.4\textwidth}{1.3pt}}
+    \vfill
+  \end{frame}}
+% ========================================================================
+
+% pomocniczy rysunek: dwa łuki nad punktami 1..4
+\newcommand{\luki}[4]{%
+\begin{tikzpicture}[baseline=-2pt,scale=0.6]
+  \foreach \x in {1,2,3,4} { \fill (\x,0) circle (1.7pt); \node[below=1pt,font=\scriptsize] at (\x,0) {\x}; }
+  \draw[red!80!black,very thick] (#1,0) to[bend left=70] (#2,0);
+  \draw[blue!75!black,very thick] (#3,0) to[bend left=70] (#4,0);
+\end{tikzpicture}}
+
+\title{Arc Match}
+\subtitle{Gra Maker--Breaker na uporządkowanych skojarzeniach}
+\author{Wojciech Jasiński}
+\date{Czerwiec 2026}
+
+\begin{document}
+
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+% ----------------------------------------------------------------------
+\section{Definicje i wstęp teoretyczny}
+
+\begin{frame}{Uporządkowane skojarzenia}
+  \begin{block}{Definicja}
+    \emph{Uporządkowane skojarzenie} rozmiaru $n$ to $n$ łuków bez wspólnych końców, narysowanych nad
+    $2n$ punktami $1,\dots,2n$. Każdy punkt jest końcem dokładnie jednego łuku.
+  \end{block}
+  \medskip
+  Dwa łuki mogą być względem siebie w jednym z trzech położeń:
+  \begin{center}
+    \begin{tabular}{ccc}
+      \luki{1}{2}{3}{4} & \luki{1}{4}{2}{3} & \luki{1}{3}{2}{4}\\[2pt]
+      \textbf{ułożenie} & \textbf{zagnieżdżenie} & \textbf{krzyżowanie}
+    \end{tabular}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Wzorce jednorodne}
+  Podskojarzenie jest \alert{jednorodne} typu $T$, gdy \emph{każda} para łuków ma typ $T$.
+  \medskip
+  \begin{itemize}
+    \item $k$-krzyżowanie: $a_1<\dots<a_k<b_1<\dots<b_k$
+    \item $k$-zagnieżdżenie: $a_1<\dots<a_k<b_k<\dots<b_1$
+    \item $k$-ułożenie: $a_1<b_1<\dots<a_k<b_k$
+  \end{itemize}
+  \medskip
+  \textbf{Przykład} ($n=3$): $\{(1,4),(2,5),(3,6)\}$ to 3-krzyżowanie,
+  $\{(1,6),(2,5),(3,4)\}$ to 3-zagnieżdżenie, $\{(1,2),(3,4),(5,6)\}$ to 3-ułożenie.
+\end{frame}
+
+\begin{frame}{Zasady gry}
+  \begin{itemize}
+    \item Plansza: $2n$ punktów na prostej; parametry $n$, $k$, typ celu (domyślnie \emph{krzyżowanie}).
+    \item Gracz w swoim ruchu łączy dwa nieużyte punkty łukiem w swoim kolorze.
+    \item \alert{Maker (czerwony)} chce zbudować $k$ własnych łuków parami się krzyżujących.
+    \item \alert{Breaker (niebieski)} stara się mu przeszkodzić.
+    \item Maker rozpoczyna. Maker wygrywa w chwili powstania wzorca; Breaker --- gdy plansza się
+      zapełni bez wzorca. Remis: na korzyść Breakera.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Twierdzenia}
+  \begin{block}{Erdős--Szekeres dla skojarzeń (Dudek, Grytczuk, Ruciński, 2022)}
+    Każde uporządkowane skojarzenie rozmiaru $n$ zawiera wzorzec jednorodny rozmiaru
+    $\ge n^{1/3}$ --- jednorodność jest \emph{nieunikniona}.
+  \end{block}
+  \begin{block}{Kryterium Erdősa--Selfridge'a}
+    Jeśli $\sum_{A} 2^{-|A|} < \tfrac12$, to Breaker ma strategię wygrywającą.
+  \end{block}
+  \footnotesize\textcolor{mdark!70}{Uwaga: zajęcie łuku zużywa jego dwa punkty, więc kryterium ES jest
+  tu jednostronnym warunkiem wystarczającym (i silną heurystyką), a nie pełnym rozstrzygnięciem.}
+\end{frame}
+
+\begin{frame}{Zaimplementowane strategie}
+  \begin{itemize}
+    \item \textbf{Poziom 0 --- losowy}: dowolny legalny łuk.
+    \item \textbf{Poziom 1 --- zachłanny}: maksymalizuje najdłuższy łańcuch danego typu, blokuje
+      najgroźniejszy łańcuch przeciwnika.
+    \item \textbf{Poziom 2 --- Erdős--Selfridge}: gra wedle potencjału
+      $\Phi=\sum_{A\ \text{żywe}} 2^{-(k-r_A)}$.
+    \item \textbf{Poziom 3 --- solver}: dokładny minimax (alpha--beta, tablica transpozycji,
+      symetria) dla małych $n$.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------------------
+\section{Demo i wyniki}
+
+\begin{frame}{Dane do testów}
+  \begin{itemize}
+    \item Cel: \emph{krzyżowanie}; Maker rozpoczyna.
+    \item Rozmiar planszy: $n = 3,\dots,8$ ($2n$ punktów).
+    \item Próg wzorca: $k = 2,\dots,\lceil n/2\rceil$.
+    \item Skuteczność jako średnia z 300 gier AI--vs--AI (na ziarno).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Wyniki: skuteczność a poziom AI}
+  Odsetek zwycięstw Makera (cel: krzyżowanie, $k=2$, Breaker na poziomie~2, 300 gier):
+  \begin{center}
+    \begin{tabular}{l|cccccc}
+      \toprule
+      $n$ & 3 & 4 & 5 & 6 & 7 & 8\\
+      \midrule
+      Maker poz.~0 (losowy) & 0\% & 6\% & 13\% & 26\% & 39\% & 53\%\\
+      Maker poz.~2 (ES) & 0\% & 100\% & 100\% & 100\% & 100\% & 100\%\\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+  \medskip
+  Silny Maker wymusza $k=2$ już od $n=4$; losowy --- dopiero stopniowo. Próg jest \emph{ostry}:
+  dla $n=3$ żaden Maker nie wymusza nawet $k=2$.
+\end{frame}
+
+\begin{frame}{Wyniki: próg gry $k^*(n)$}
+  Największe $k$, które Maker (poz.~2) wymusza $\ge 50\%$ przeciw Breakerowi (poz.~2), cel:
+  krzyżowanie, 100 gier:
+  \begin{center}
+    \begin{tabular}{l|cccccc}
+      \toprule
+      $n$ & 3 & 4 & 5 & 6 & 7 & 8\\
+      \midrule
+      $k^*(n)$ & 0 & 2 & 2 & 2 & 3 & 3\\
+      pułap $\lceil n/2\rceil$ & 2 & 2 & 3 & 3 & 4 & 4\\
+      $n^{1/3}$ & 1.44 & 1.59 & 1.71 & 1.82 & 1.91 & 2.00\\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+  \medskip
+  Dla $n\ge 4$ próg $k^*(n)$ leży poniżej pułapu $\lceil n/2\rceil$ i powyżej krzywej odniesienia
+  $n^{1/3}$ (dla $n=3$ plansza jest zbyt mała na $k=2$). Dokładne zachowanie $k^*(n)$ pozostaje
+  \alert{problemem otwartym}.
+\end{frame}
+
+\begin{frame}[plain]
+  \centering\vfill
+  {\usebeamerfont{frametitle}\color{morange}Dziękujemy za uwagę}\\[0.6em]
+  {\color{mteal}\rule{0.4\textwidth}{1.3pt}}
+  \vfill
+\end{frame}
+
+\end{document}

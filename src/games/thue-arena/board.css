@@ -1,0 +1,37 @@
+/* Board-specific styles for Thue Arena, scoped under .game-thue-arena so they cannot collide with
+   other games. The generic design system (cards, controls, buttons, meter, banner, explainers, text
+   helpers) lives in common/shared.css and the 3-pane layout lives in shell.css. */
+
+/* word + carets ----------------------------------------------------------- */
+.game-thue-arena .wordbox { position: relative; min-height: 72px; background: linear-gradient(180deg,#fbfcff,#f4f6fc); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; align-items: center; }
+.game-thue-arena .word { display: flex; flex-wrap: wrap; align-items: center; gap: 0; }
+.game-thue-arena .word.empty::before { content: "(empty word — Ann starts repetition-free)"; color: var(--muted); font-size: .86rem; }
+.game-thue-arena .tile { width: 36px; height: 42px; margin: 3px; border-radius: 9px; display: grid; place-items: center; font-weight: 800; font-size: 1.12rem; background: #fff; border: 1px solid var(--line); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.04); animation: thueArena_pop .18s ease-out; }
+.game-thue-arena .tile.fresh { border-color: var(--violet); box-shadow: 0 0 0 2px rgba(110,86,207,.25); }
+.game-thue-arena .tile.win-a { background: var(--red-weak); border-color: var(--red); color: var(--red); animation: thueArena_pulse 1.0s ease-in-out infinite; }
+.game-thue-arena .tile.win-b { background: var(--blue-weak); border-color: var(--blue); color: var(--blue); animation: thueArena_pulse 1.0s ease-in-out infinite; }
+@keyframes thueArena_pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes thueArena_pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+
+/* insertion carets (online mode) */
+.game-thue-arena .caret { width: 16px; height: 42px; margin: 3px 0; border: none; background: transparent; padding: 0; position: relative; cursor: pointer; }
+.game-thue-arena .caret::before { content: ""; position: absolute; left: 50%; top: 6px; bottom: 6px; width: 2px; transform: translateX(-50%); background: #d3d8e6; border-radius: 2px; transition: background .12s, width .12s; }
+.game-thue-arena .caret:hover:not(:disabled)::before { background: var(--blue); width: 3px; }
+.game-thue-arena .caret.active::before { background: var(--blue); width: 4px; box-shadow: 0 0 0 3px var(--blue-weak); }
+.game-thue-arena .caret.suggest::before { background: var(--violet); width: 4px; box-shadow: 0 0 0 3px rgba(110,86,207,.35); }
+.game-thue-arena .caret:disabled { cursor: default; }
+.game-thue-arena .caret.dim { opacity: .35; }
+
+/* palette ----------------------------------------------------------------- */
+.game-thue-arena .palette { display: flex; gap: 8px; flex-wrap: wrap; }
+.game-thue-arena .palette button { width: 46px; height: 46px; border-radius: 11px; border: 1px solid var(--line); background: #fff; font: inherit; font-weight: 800; font-size: 1.15rem; cursor: pointer; transition: background .12s, transform .05s, border-color .12s; }
+.game-thue-arena .palette button:hover:not(:disabled) { background: #f5f6fb; border-color: var(--violet); }
+.game-thue-arena .palette button:active:not(:disabled) { transform: translateY(1px); }
+.game-thue-arena .palette button:disabled { opacity: .4; cursor: not-allowed; }
+.game-thue-arena .palette button.danger { border-color: var(--red); color: var(--red); }
+.game-thue-arena .palette button.suggest { box-shadow: 0 0 0 2px rgba(110,86,207,.35); border-color: var(--violet); }
+
+/* explanation overlay (teaching feature) — its #explainNote node lives in the Hints card */
+.game-thue-arena .explain-note { font-size: .84rem; line-height: 1.45; padding: 10px 12px; border-radius: 10px; background: rgba(110,86,207,.08); border: 1px solid rgba(110,86,207,.25); color: var(--ink); margin-top: 12px; }
+.game-thue-arena .explain-note b { color: var(--violet); }
+.game-thue-arena .explain-note.hidden { display: none; }
