@@ -36,14 +36,6 @@
 \setbeamertemplate{footline}{%
   \hbox{\color{mteal}\rule{\paperwidth}{1pt}}%
   \hfill{\footnotesize\color{mdark!70}\insertframenumber\,/\,\inserttotalframenumber\ \ }\vspace*{2pt}}
-% slajd sekcji w stylu Metropolis (pasek + wyśrodkowany tytuł)
-\AtBeginSection[]{%
-  \begin{frame}[plain]
-    \centering\vfill
-    {\usebeamerfont{frametitle}\color{morange}\insertsectionhead}\\[0.6em]
-    {\color{mteal}\rule{0.4\textwidth}{1.3pt}}
-    \vfill
-  \end{frame}}
 % ========================================================================
 
 % pomocniczy rysunek: dwa łuki nad punktami 1..4
@@ -65,35 +57,20 @@
   \titlepage
 \end{frame}
 
-% ----------------------------------------------------------------------
-\section{Definicje i wstęp teoretyczny}
-
-\begin{frame}{Uporządkowane skojarzenia}
+\begin{frame}{Uporządkowane skojarzenia i wzorce}
   \begin{block}{Definicja}
-    \emph{Uporządkowane skojarzenie} rozmiaru $n$ to $n$ łuków bez wspólnych końców, narysowanych nad
-    $2n$ punktami $1,\dots,2n$. Każdy punkt jest końcem dokładnie jednego łuku.
+    \emph{Uporządkowane skojarzenie} rozmiaru $n$ to $n$ łuków bez wspólnych końców nad $2n$ punktami.
+    Dwa łuki są w jednym z trzech położeń:
   \end{block}
-  \medskip
-  Dwa łuki mogą być względem siebie w jednym z trzech położeń:
   \begin{center}
     \begin{tabular}{ccc}
       \luki{1}{2}{3}{4} & \luki{1}{4}{2}{3} & \luki{1}{3}{2}{4}\\[2pt]
       \textbf{ułożenie} & \textbf{zagnieżdżenie} & \textbf{krzyżowanie}
     \end{tabular}
   \end{center}
-\end{frame}
-
-\begin{frame}{Wzorce jednorodne}
-  Podskojarzenie jest \alert{jednorodne} typu $T$, gdy \emph{każda} para łuków ma typ $T$.
-  \medskip
-  \begin{itemize}
-    \item $k$-krzyżowanie: $a_1<\dots<a_k<b_1<\dots<b_k$
-    \item $k$-zagnieżdżenie: $a_1<\dots<a_k<b_k<\dots<b_1$
-    \item $k$-ułożenie: $a_1<b_1<\dots<a_k<b_k$
-  \end{itemize}
-  \medskip
-  \textbf{Przykład} ($n=3$): $\{(1,4),(2,5),(3,6)\}$ to 3-krzyżowanie,
-  $\{(1,6),(2,5),(3,4)\}$ to 3-zagnieżdżenie, $\{(1,2),(3,4),(5,6)\}$ to 3-ułożenie.
+  Podskojarzenie jest \alert{jednorodne}, gdy \emph{każda} para łuków ma ten sam typ. \textbf{Przykład}
+  ($n=3$): $\{(1,4),(2,5),(3,6)\}$ to 3-krzyżowanie, $\{(1,6),(2,5),(3,4)\}$ to 3-zagnieżdżenie,
+  $\{(1,2),(3,4),(5,6)\}$ to 3-ułożenie.
 \end{frame}
 
 \begin{frame}{Zasady gry}
@@ -107,16 +84,17 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Twierdzenia}
-  \begin{block}{Erdős--Szekeres dla skojarzeń (Dudek, Grytczuk, Ruciński, 2022)}
-    Każde uporządkowane skojarzenie rozmiaru $n$ zawiera wzorzec jednorodny rozmiaru
-    $\ge n^{1/3}$ --- jednorodność jest \emph{nieunikniona}.
+\begin{frame}{Twierdzenie i heurystyka}
+  \begin{block}{Erdős--Szekeres dla skojarzeń (Dudek, Grytczuk, Ruciński, 2024)}
+    Każde uporządkowane skojarzenie rozmiaru $n$ zawiera wzorzec jednorodny rozmiaru $\ge n^{1/3}$.
+    Dotyczy to \emph{całego} skojarzenia (obu kolorów), więc \emph{nie} daje wprost dolnego
+    ograniczenia dla Makera.
   \end{block}
-  \begin{block}{Kryterium Erdősa--Selfridge'a}
-    Jeśli $\sum_{A} 2^{-|A|} < \tfrac12$, to Breaker ma strategię wygrywającą.
+  \begin{block}{Erdős--Selfridge --- tylko heurystyka}
+    Gdyby łuki były niezależne, warunek $\binom{2n}{2k}2^{-k}<\tfrac12$ gwarantowałby wygraną
+    Breakera. Lecz wybór łuku zużywa jego końce (Breaker może unieważnić cel, \emph{nie} zajmując go),
+    więc to nie jest model Arc Match --- ES służy jako heurystyka, nie twierdzenie.
   \end{block}
-  \footnotesize\textcolor{mdark!70}{Uwaga: zajęcie łuku zużywa jego dwa punkty, więc kryterium ES jest
-  tu jednostronnym warunkiem wystarczającym (i silną heurystyką), a nie pełnym rozstrzygnięciem.}
 \end{frame}
 
 \begin{frame}{Zaimplementowane strategie}
@@ -124,22 +102,10 @@
     \item \textbf{Poziom 0 --- losowy}: dowolny legalny łuk.
     \item \textbf{Poziom 1 --- zachłanny}: maksymalizuje najdłuższy łańcuch danego typu, blokuje
       najgroźniejszy łańcuch przeciwnika.
-    \item \textbf{Poziom 2 --- Erdős--Selfridge}: gra wedle potencjału
+    \item \textbf{Poziom 2 --- Erdős--Selfridge}: gra według potencjału
       $\Phi=\sum_{A\ \text{żywe}} 2^{-(k-r_A)}$.
     \item \textbf{Poziom 3 --- solver}: dokładny minimax (alpha--beta, tablica transpozycji,
       symetria) dla małych $n$.
-  \end{itemize}
-\end{frame}
-
-% ----------------------------------------------------------------------
-\section{Demo i wyniki}
-
-\begin{frame}{Dane do testów}
-  \begin{itemize}
-    \item Cel: \emph{krzyżowanie}; Maker rozpoczyna.
-    \item Rozmiar planszy: $n = 3,\dots,8$ ($2n$ punktów).
-    \item Próg wzorca: $k = 2,\dots,\lceil n/2\rceil$.
-    \item Skuteczność jako średnia z 300 gier AI--vs--AI (na ziarno).
   \end{itemize}
 \end{frame}
 
@@ -156,13 +122,14 @@
     \end{tabular}
   \end{center}
   \medskip
-  Silny Maker wymusza $k=2$ już od $n=4$; losowy --- dopiero stopniowo. Próg jest \emph{ostry}:
-  dla $n=3$ żaden Maker nie wymusza nawet $k=2$.
+  Mocny Maker (poziom~2) wygrywa wszystkie 300 gier już od $n=4$, losowy --- dopiero stopniowo:
+  poziom AI ma duże znaczenie. Że to rzeczywiście próg gry, potwierdza dokładny solver (następny
+  slajd).
 \end{frame}
 
 \begin{frame}{Wyniki: próg gry $k^*(n)$}
-  Największe $k$, które Maker (poz.~2) wymusza $\ge 50\%$ przeciw Breakerowi (poz.~2), cel:
-  krzyżowanie, 100 gier:
+  Dokładny próg minimax $k^*(n)$ --- największe $k\ge 2$, które Maker wymusza przy grze optymalnej
+  (solver poziomu~3), cel: krzyżowanie:
   \begin{center}
     \begin{tabular}{l|cccccc}
       \toprule
@@ -176,8 +143,8 @@
   \end{center}
   \medskip
   Dla $n\ge 4$ próg $k^*(n)$ leży poniżej pułapu $\lceil n/2\rceil$ i powyżej krzywej odniesienia
-  $n^{1/3}$ (dla $n=3$ plansza jest zbyt mała na $k=2$). Dokładne zachowanie $k^*(n)$ pozostaje
-  \alert{problemem otwartym}.
+  $n^{1/3}$ (przy $n=3$ wzorzec $k=2$ jest możliwy, lecz Maker nie potrafi go wymusić). Ogólne
+  zachowanie $k^*(n)$ dla dużych $n$ pozostaje \alert{problemem otwartym}.
 \end{frame}
 
 \begin{frame}[plain]

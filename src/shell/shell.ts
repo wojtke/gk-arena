@@ -1,4 +1,4 @@
-// The arena shell: a hash-routed picker + a two-column host for whichever game is open. Layout is
+// The arena shell: a path-routed picker + a two-column host for whichever game is open. Layout is
 // settings + hints + explainers stacked in the LEFT panel, the board filling the wider center-right
 // column. One game is mounted at a time; the shell owns the topbar, the Explainers toggle, and
 // teardown. All shell element ids are namespaced `hub-*` so they never collide with a game's ids.
@@ -34,8 +34,22 @@ function gameById(id: string): GameModule | undefined {
   return games.find((g) => g.id === id);
 }
 
+// Path-based routing under Vite's base (e.g. "/gk-arena/"). The picker is the base path; a game is
+// base + its id (e.g. "/gk-arena/arc-match"). GitHub Pages serves 404.html (a copy of index.html) for
+// those deep paths, so a hard refresh / shared link re-bootstraps the app, which then reads the path.
+const BASE = import.meta.env.BASE_URL; // always has a trailing slash, e.g. "/gk-arena/"
+
 function currentRoute(): string {
-  return location.hash.replace(/^#\/?/, '').trim();
+  let p = location.pathname;
+  if (p === BASE.slice(0, -1)) return '';            // "/gk-arena" without the trailing slash
+  if (p.startsWith(BASE)) p = p.slice(BASE.length);
+  return p.replace(/^\/+|\/+$/g, '').trim();
+}
+
+function navigate(id: string): void {
+  const target = BASE + id;                          // id "" → the picker (base path)
+  if (location.pathname !== target) history.pushState({}, '', target);
+  route();
 }
 
 // ---- picker ----
@@ -81,7 +95,7 @@ function renderPicker(app: HTMLElement): void {
     </footer>`;
 
   app.querySelectorAll<HTMLElement>('.game-card').forEach((c) => {
-    c.addEventListener('click', () => { location.hash = `#/${c.dataset.id}`; });
+    c.addEventListener('click', () => navigate(c.dataset.id ?? ''));
   });
 }
 
@@ -137,7 +151,7 @@ function renderGame(app: HTMLElement, mod: GameModule): void {
     });
   });
 
-  app.querySelector<HTMLButtonElement>('#hub-back')!.addEventListener('click', () => { location.hash = '#/'; });
+  app.querySelector<HTMLButtonElement>('#hub-back')!.addEventListener('click', () => navigate(''));
 }
 
 // Reset the viewport to the top on navigation — the SPA swaps content in place, so without this
@@ -158,6 +172,6 @@ function route(): void {
 }
 
 export function startShell(): void {
-  window.addEventListener('hashchange', route);
+  window.addEventListener('popstate', route);
   route();
 }
